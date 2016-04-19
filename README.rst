@@ -26,7 +26,7 @@ implementation detail. cnf_formula objects are immutable.
 Constructors
 ------------
 
-``lite_cnf_formula.L(obj)``
+**lite_cnf_formula.L(obj)**
 Creates a new cnf_formula object with ``obj`` as the only literal
 
 Methods and Operators
@@ -66,13 +66,13 @@ Let ``A`` and ``B`` by cnf_formula objects
 Utility Methods
 ===============
 
-``lite_cnf_formula.is_cnf_formula(obj)``
+**lite_cnf_formula.is_cnf_formula(obj)**
 Returns whether ``obj`` is a cnf_formula object
 
-``lite_cnf_formula.or_(*objs)``
+**lite_cnf_formula.or_(*objs)**
 Shortcut that is equivelent to ``L(obj1) | L(obj2) | ...``
 
-``lite_cnf_formula.and_(*objs)``
+**lite_cnf_formula.and_(*objs)**
 Shortcut that is equivelent to ``L(obj1) & L(obj2) & ...``
 
 Example Usage
