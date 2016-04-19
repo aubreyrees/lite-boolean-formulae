@@ -1,0 +1,4 @@
+graft lite_cnf_formulae
+include LICENSE
+include MANIFEST.in
+include README.rst
