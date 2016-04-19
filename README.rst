@@ -15,7 +15,7 @@ implementation detail. cnf_formula objects are immutable.
 Constructors
 ------------
 
-**lite_cnf_formula.L(obj)**
+**lite_cnf_formulae.L(obj)**
 
 Creates a new cnf_formula object with ``obj`` as the only literal
 
@@ -56,26 +56,26 @@ Let ``A`` and ``B`` by cnf_formula objects
 Constants
 =========
 
-**lite_cnf_formula.Tautology**
+**lite_cnf_formulae.Tautology**
 
 A constant that is cnf_formula object that represents a logical tautology.
 
-**lite_cnf_formula.Contradiction**
+**lite_cnf_formulae.Contradiction**
 
 A constant that is cnf_formula object that represents a logical condtriction.
 
 Utility Methods
 ===============
 
-**lite_cnf_formula.is_cnf_formula(obj)**
+**lite_cnf_formulae.is_cnf_formula(obj)**
 
 Returns whether ``obj`` is a cnf_formula object
 
-**lite_cnf_formula.or_(*objs)**
+**lite_cnf_formulae.or_(*objs)**
 
 Shortcut that is equivelent to ``L(obj1) | L(obj2) | ...``
 
-**lite_cnf_formula.and_(*objs)**
+**lite_cnf_formulae.and_(*objs)**
 
 Shortcut that is equivelent to ``L(obj1) & L(obj2) & ...``
 
@@ -84,7 +84,7 @@ Example Usage
 
 ::
 
-  In [1]: from lite_cnf_formula import L, Tautology, Contradiction
+  In [1]: from lite_cnf_formulae import L, Tautology, Contradiction
   In [2]: L('x') | (L('y') & L('z'))
   Out[2]: ('x' | 'y') & ('x' | 'z') 
   In [3]: L('x') | L('x')
