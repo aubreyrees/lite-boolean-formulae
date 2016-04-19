@@ -5,24 +5,6 @@ Lite CNF Formulae
 This is module is intended to help with the building of smallish logical
 statements.
 
-Constants
-=========
-
-lite_cnf_formula.Tautology
-
-A constant that is cnf_formula object that represents a logical tautology.
-
-lite_cnf_formula.Contradiction
-
-A constant that is cnf_formula object that represents a logical condtriction.
-
-cnf_formula Objects
-===================
-   
-A cnf_formula object represents a Boolean formula in CNF. The precise
-implemention of cnf_formula objects is not defined and is considered an
-implementation detail. cnf_formula objects are immutable.
-
 Constructors
 ------------
 
@@ -63,6 +45,25 @@ Let ``A`` and ``B`` by cnf_formula objects
 |                          | instances of the literal 'obj' replaced by the     |
 |                          | formula that B represents.                         |
 +--------------------------+----------------------------------------------------+
+
+Constants
+=========
+
+**lite_cnf_formula.Tautology**
+
+A constant that is cnf_formula object that represents a logical tautology.
+
+**lite_cnf_formula.Contradiction**
+
+A constant that is cnf_formula object that represents a logical condtriction.
+
+cnf_formula Objects
+===================
+   
+A cnf_formula object represents a Boolean formula in CNF. The precise
+implemention of cnf_formula objects is not defined and is considered an
+implementation detail. cnf_formula objects are immutable.
+
 
 Utility Methods
 ===============
