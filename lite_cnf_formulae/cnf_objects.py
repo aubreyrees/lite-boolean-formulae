@@ -1,9 +1,9 @@
 import itertools
 import operator
 import functools
-from .base import ImmutableClass
+from .utils.immutable_class import ImmutableClass
 from .constants import Tautology, Contradiction
-from .internal_util import build_set
+
 
 class CNFObj(ImmutableClass):
     def __and__(self, obj):
@@ -11,8 +11,8 @@ class CNFObj(ImmutableClass):
             return obj
         elif obj is Tautology:
             return self
-        elif isinstance(obj, (CNFLiteral, CNFFormula)):
-            return _cnf_formula(self.clauses | obj.clauses)
+        elif isinstance(obj, (L, CNFFormula)):
+            return CNFFormula.build(self.clauses | obj.clauses)
         else:
             raise TypeError((
                 "unsupported operand type(s) for &: '{}' and '{}'"
@@ -23,18 +23,48 @@ class CNFObj(ImmutableClass):
             return self
         elif obj is Tautology:
             return obj
-        elif isinstance(obj, (CNFLiteral, CNFFormula)):
+        elif isinstance(obj, (L, CNFFormula)):
             product = itertools.product(self.clauses, obj.clauses)
-            return _cnf_formula(x | y for x,y in product)
+            return CNFFormula.build(x | y for x, y in product)
         else:
             raise TypeError((
                 "unsupported operand type(s) for |: '{}' and '{}'"
             ).format(self.__class__.__name__, obj.__class__.__name__))
 
+
 class CNFFormula(CNFObj):
     def __init__(self, clauses):
         self.clauses = clauses
         self._frozen = True
+
+    @classmethod
+    def build(cls, clauses):
+        def build(singles, clauses):
+            negated_singles = set(~s for s in singles)
+            for s in clauses:
+                if isinstance(s, CNFClause):
+                    if len(s.vars) == 1 or s.vars.isdisjoint(singles):
+                        yield CNFClause.build(s.vars - negated_singles)
+
+        singles = set()
+        clauses = set(clauses)
+
+        for clause in clauses:
+            if clause is Contradiction:
+                return clause
+            elif isinstance(clause, CNFClause):
+                if len(clause.vars) == 1:
+                    var = next(iter(clause.vars))
+                    if ~var in singles:
+                        return Contradiction
+                    else:
+                        singles.add(var)
+
+        formula = frozenset(build(singles, clauses))
+        if formula:
+            return cls(formula)
+        else:
+            return Tautology
 
     def __invert__(self):
         formulae = (~x for x in self.clauses)
@@ -60,10 +90,29 @@ class CNFFormula(CNFObj):
     def __contains__(self, obj):
         return any(obj in s for s in self.clauses)
 
+
 class CNFClause(ImmutableClass):
     def __init__(self, vars):
         self.vars = vars
         self._frozen = True
+
+    @classmethod
+    def build(cls, *vars):
+        vars = set(vars)
+
+        for var in vars:
+            if var is Tautology:
+                return var
+            elif isinstance(var, L):
+                if ~var in vars:
+                    return Tautology
+
+        clause = frozenset(v for v in vars if var is not Contradiction)
+
+        if clause:
+            return cls(clause)
+        else:
+            return Contradiction
 
     def __or__(self, obj):
         if obj is Contradiction:
@@ -71,8 +120,8 @@ class CNFClause(ImmutableClass):
         elif obj is Tautology:
             return obj
         elif isinstance(obj, CNFClause):
-            clause  = self.vars | obj.vars
-            return _cnf_clause(clause)
+            clause = self.vars | obj.vars
+            return CNFClause.build(clause)
         else:
             raise TypeError((
                 "unsupported operand type(s) for |: '{}' and '{}'"
@@ -81,8 +130,8 @@ class CNFClause(ImmutableClass):
     def __invert__(self):
         def build():
             for x in self.vars:
-                yield _cnf_clause(set((~x,)))
-        return _cnf_formula(build())
+                yield CNFClause(set((~x,)))
+        return CNFFormula.build(build())
 
     def substitute(self, var, formula):
         bits = (v.substitute(var, formula) for v in self.vars)
@@ -96,8 +145,10 @@ class CNFClause(ImmutableClass):
         return hash(self.vars)
 
     def __eq__(self, obj):
-        return ( isinstance(obj, CNFClause)
-                 and obj.vars == self.vars )
+        return (
+            isinstance(obj, CNFClause) and
+            obj.vars == self.vars
+        )
 
     def __repr__(self):
         return ' | '.join(repr(s) for s in self.vars)
@@ -105,18 +156,19 @@ class CNFClause(ImmutableClass):
     def __contains__(self, obj):
         return any(obj in s for s in self.vars)
 
-class CNFLiteral(CNFObj):
-    def __init__(self, var, negated):
+
+class L(CNFObj):
+    def __init__(self, var, negated=False):
         self.var = var
         self.negated = negated
         self._frozen = True
 
     @property
     def clauses(self):
-        return build_set(CNFClause(build_set(self)))
-   
+        return frozenset(CNFClause(frozenset(self,)),)
+
     def __invert__(self):
-        return CNFLiteral(self.var, negated = not self.negated)
+        return L(self.var, negated=(not self.negated))
 
     def substitute(self, var, formula):
         if self.var == var:
@@ -125,18 +177,20 @@ class CNFLiteral(CNFObj):
             else:
                 return formula
         else:
-            return CNFLiteral(self.var, self.negated)
+            return L(self.var, self.negated)
 
     def get_literals(self):
-        return build_set(self.var)
+        return frozenset(self.var,)
 
     def __hash__(self):
         return int(str(hash(self.var)) + str(hash(self.negated)))
 
     def __eq__(self, obj):
-        return ( isinstance(obj, CNFLiteral)
-                 and self.var == obj.var
-                 and self.negated == obj.negated )
+        return (
+            isinstance(obj, L) and
+            self.var == obj.var and
+            self.negated == obj.negated
+        )
 
     def __repr__(self):
         if self.negated:
@@ -146,49 +200,3 @@ class CNFLiteral(CNFObj):
 
     def __contains__(self, obj):
         return obj == self.var
-
-def _cnf_clause(vars):
-    vars = set(vars)
-
-    for var in vars:
-        if var is Tautology:
-            return var
-        elif isinstance(var, CNFLiteral):
-            if ~var in vars:
-                return Tautology
-
-    clause = frozenset(
-        v for v in vars if not var is Contradiction)
-
-    if clause:
-        return CNFClause(clause)
-    else:
-        return Contradiction
-
-def _cnf_formula(clauses):
-    def build(singles, clauses):
-        negated_singles = set(~s for s in singles)
-        for s in clauses:
-            if isinstance(s, CNFClause):
-                if len(s.vars) == 1 or s.vars.isdisjoint(singles):
-                    yield _cnf_clause(s.vars - negated_singles)
-
-    singles = set()
-    clauses = set(clauses)
-
-    for clause in clauses:
-        if clause is Contradiction:
-            return var
-        elif isinstance(clause, CNFClause):
-            if len(clause.vars) == 1:
-                var = next(iter(clause.vars))
-                if ~var in singles:
-                    return Contradiction
-                else:
-                    singles.add(var)
-
-    formula = frozenset(build(singles, clauses))
-    if formula:
-        return CNFFormula(formula)
-    else:
-        return Tautology

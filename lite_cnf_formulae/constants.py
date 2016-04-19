@@ -1,5 +1,6 @@
 from .base import ImmutableClass
 
+
 class TautologyClass(ImmutableClass):
     _frozen = True
 
@@ -18,6 +19,7 @@ class TautologyClass(ImmutableClass):
     def __invert__(self):
         return Contradiction
 
+
 class ContradictionClass(ImmutableClass):
     _frozen = True
 
@@ -35,6 +37,7 @@ class ContradictionClass(ImmutableClass):
 
     def __invert__(self):
         return Tautology
+
 
 Tautology = TautologyClass()
 Contradiction = ContradictionClass()

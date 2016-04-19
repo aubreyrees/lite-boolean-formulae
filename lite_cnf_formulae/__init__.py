@@ -1,7 +1,12 @@
-from .constructors import L, and_, or_
+from .cnf_objects import L
 from .constants import Tautology, Contradiction
-from .util import is_cnf_formula
+from .shortcuts import is_cnf_formula, and_, or_
 
-__all__ = [ 'L', 'and_', 'or_',
-            'Tautology', 'Contradiction',
-            'is_cnf_formula' ]
+__all__ = [
+    'L',
+    'and_',
+    'or_',
+    'Tautology',
+    'Contradiction',
+    'is_cnf_formula'
+]
