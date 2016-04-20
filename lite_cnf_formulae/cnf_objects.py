@@ -51,7 +51,7 @@ class CNFFormula(CNFObj):
 
         for clause in clauses:
             if clause is Contradiction:
-                return clause
+                return var
             elif isinstance(clause, CNFClause):
                 if len(clause.vars) == 1:
                     var = next(iter(clause.vars))
@@ -97,7 +97,7 @@ class CNFClause(ImmutableClass):
         self._frozen = True
 
     @classmethod
-    def build(cls, *vars):
+    def build(cls, vars):
         vars = set(vars)
 
         for var in vars:
@@ -130,7 +130,7 @@ class CNFClause(ImmutableClass):
     def __invert__(self):
         def build():
             for x in self.vars:
-                yield CNFClause(set((~x,)))
+                yield CNFClause.build(set((~x,)))
         return CNFFormula.build(build())
 
     def substitute(self, var, formula):
@@ -165,7 +165,7 @@ class L(CNFObj):
 
     @property
     def clauses(self):
-        return frozenset(CNFClause(frozenset(self,)),)
+        return frozenset((CNFClause(frozenset((self,))),))
 
     def __invert__(self):
         return L(self.var, negated=(not self.negated))
@@ -180,7 +180,7 @@ class L(CNFObj):
             return L(self.var, self.negated)
 
     def get_literals(self):
-        return frozenset(self.var,)
+        return frozenset((self.var,))
 
     def __hash__(self):
         return int(str(hash(self.var)) + str(hash(self.negated)))

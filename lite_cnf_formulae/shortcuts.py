@@ -1,6 +1,6 @@
 import operator
 import functools
-from .cnf import CNFFormula, L
+from .cnf_objects import CNFFormula, L
 
 
 def is_cnf_formula(obj):

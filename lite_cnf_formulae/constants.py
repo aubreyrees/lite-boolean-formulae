@@ -1,4 +1,4 @@
-from .base import ImmutableClass
+from .utils.immutable_class import ImmutableClass
 
 
 class TautologyClass(ImmutableClass):
