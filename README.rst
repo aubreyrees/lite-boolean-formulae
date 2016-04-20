@@ -1,90 +1,96 @@
-=================
-Lite CNF Formulae
-=================
+=====================
+Lite Boolean Formulae
+=====================
 
-This module helps with the building of smallish logical statements.
+This module helps with the building of smallish boolean formulae. This module
+represents expresses boolean formulae in CNF internally.
 
-cnf_formula Objects
-===================
+boolean_formula Objects
+=======================
    
-A cnf_formula object represents a Boolean formula in CNF. The precise
-implemention of cnf_formula objects is not defined and is considered an
-implementation detail. cnf_formula objects are immutable.
+A boolean_formula object represents a Boolean formula. The precise
+implemention of a boolean_formula object is not defined and is considered an
+implementation detail. boolean_formula objects are immutable.
 
 
 Constructors
 ------------
 
-**lite_cnf_formulae.L(obj)**
+**lite_boolean_formulae.L(obj)**
 
-Creates a new cnf_formula object with ``obj`` as the only literal
+Creates a new boolean_formula object with ``obj`` as the only literal.
 
 Methods and Operators
 ---------------------
-Let ``A`` and ``B`` by cnf_formula objects
+Let ``A`` and ``B`` by boolean_formula objects
 
-+--------------------------+----------------------------------------------------+
-| ``A & B``                | Returns a new cnf_formula object that represents   |
-|                          | the formula that is the result of anding the       |
-|                          | formulae that A and B represent.                   |
-+--------------------------+----------------------------------------------------+
-| ``A | B``                | Returns a new cnf_formula object that represents   |
-|                          | the formula that is the result of oring the        |
-|                          | formulae that A and B represent                    |
-+--------------------------+----------------------------------------------------+
-| ``~ A``                  | Returns a cnf_formula object that represents the   |
-|                          | formula that is the logical negation of the        |
-|                          | formula that A represents                          |
-+--------------------------+----------------------------------------------------+
-| ``obj in A``             | Returns whether obj is a literal in the formula    |
-|                          | that A represents. Equivelent to, but more         |
-|                          | efficient than, obj in A.get_literals()            |
-+--------------------------+----------------------------------------------------+
-| ``obj x not in A``       | Returns whether obj is not a literal in the        |
-|                          | formula that A represents. Equivelent to, but more |
-|                          | efficient than, obj not in A.get_literals()        |
-+--------------------------+----------------------------------------------------+
-| ``A.get_literals()``     | Returns, as a frozenset, all the literals in the   |
-|                          | formula that A represents                          |
-+--------------------------+----------------------------------------------------+
-| ``A.subsitute(obj, B)``  | Returns a new cnf_formula object that represents   |
-|                          | the formula that A represents but with all         |
-|                          | instances of the literal 'obj' replaced by the     |
-|                          | formula that B represents.                         |
-+--------------------------+----------------------------------------------------+
++--------------------------+-------------------------------------------------+
+| ``A & B``                | Returns a new boolean_formula object that       |
+|                          | represents the formula that is the result of    |
+|                          | anding the formulae that ``A`` and ``B``        |
+|                          | represent.                                      |
++--------------------------+-------------------------------------------------+
+| ``A | B``                | Returns a new boolean_formula object that       |
+|                          | represents the formula that is the result of    |
+|                          | oring the formulae that ``A`` and ``B``         |
+|                          | represent.                                      |
++--------------------------+-------------------------------------------------+
+| ``~ A``                  | Returns a new boolean_formula object that       |
+|                          | reprsents the formula that is the logical       |
+|                          | negation of the formula that ``A`` represents.  |
++--------------------------+-------------------------------------------------+
+| ``obj in A``             | Returns whether ``obj`` is a literal in the     |
+|                          | formula that ``A`` represents. Equivelent to,   |
+|                          | but more efficient than,                        |
+|                          | ``obj in A.get_literals()``                     |
++--------------------------+-------------------------------------------------+
+| ``obj x not in A``       | Returns whether ``obj`` is not a literal in the |
+|                          | formula that ``A`` represents. Equivelent to,   |
+|                          | but more efficient than,                        | 
+|                          | ``obj not in A.get_literals()``                 |
++--------------------------+-------------------------------------------------+
+| ``A.get_literals()``     | Returns, as a frozenset, all the literals in    |
+|                          | the formula that ``A`` represents               |
++--------------------------+-------------------------------------------------+
+| ``A.subsitute(obj, B)``  | Returns a new boolean_formula object that       |
+|                          | represents the formula that ``A`` represents    |
+|                          | but with all instances of the literal ``obj``   |
+|                          | replaced by the formula that ``B`` represents.  |
++--------------------------+-------------------------------------------------+
 
 Constants
 =========
 
-**lite_cnf_formulae.Tautology**
+**lite_boolean_formulae.Tautology**
 
-A constant that is cnf_formula object that represents a logical tautology.
+A constant that is boolean_formula object that represents a logical tautology.
 
-**lite_cnf_formulae.Contradiction**
+**lite_boolean_formulae.Contradiction**
 
-A constant that is cnf_formula object that represents a logical condtriction.
+A constant that is boolean_formula object that represents a logical.
+condtriction.
 
 Utility Methods
 ===============
 
-**lite_cnf_formulae.is_cnf_formula(obj)**
+**lite_boolean_formulae.is_boolean_formula(obj)**
 
-Returns whether ``obj`` is a cnf_formula object
+Returns whether ``obj`` is a boolean_formula object.
 
-**lite_cnf_formulae.or_(*objs)**
+**lite_boolean_formulae.or_(*objs)**
 
-Shortcut that is equivelent to ``L(obj1) | L(obj2) | ...``
+Shortcut that is equivelent to ``L(obj1) | L(obj2) | ...``.
 
-**lite_cnf_formulae.and_(*objs)**
+**lite_boolean_formulae.and_(*objs)**
 
-Shortcut that is equivelent to ``L(obj1) & L(obj2) & ...``
+Shortcut that is equivelent to ``L(obj1) & L(obj2) & ...``.
 
 Example Usage
 =============
 
 ::
 
-  In [1]: from lite_cnf_formulae import L, Tautology, Contradiction
+  In [1]: from lite_boolean_formulae import L, Tautology, Contradiction
   In [2]: L('x') | (L('y') & L('z'))
   Out[2]: ('x' | 'y') & ('x' | 'z') 
   In [3]: L('x') | L('x')

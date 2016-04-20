@@ -22,7 +22,7 @@ class PyTest(TestCommand):
 
 
 setup(
-    name='lite-cnf-formulae',
+    name='lite-boolean-formulae',
     version='0.1a1',
     description="A naive CNF implentation to help with buliding logical statements",
     author='Aubrey Stark-Toller',
@@ -37,7 +37,7 @@ setup(
         'Programming Language :: Python :: 3.5',
     ],
     keywords='utils',
-    packages=["lite_cnf_formulae"],
+    packages=["lite_boolean_formulae"],
     tests_require = ['pytest', 'pytest-cov'],
     cmdclass = {'test': PyTest}
 )

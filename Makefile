@@ -28,7 +28,7 @@ clean-test:
 	rm -rf htmlcov/
 
 coverage:
-	coverage run --branch --source lite_cnf_formulae setup.py test
+	coverage run --branch --source lite_boolean_formulae setup.py test
 	coverage report -m
 	coverage html
 

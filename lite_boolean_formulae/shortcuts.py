@@ -1,11 +1,11 @@
 import operator
 import functools
-from .cnf_objects import CNFFormula, L
+from .boolean_objects import CNFFormula, L
 
 
-def is_cnf_formula(obj):
+def is_boolean_formula(obj):
     """
-    Returns whether obj is a cnf_formula object
+    Returns whether obj is a boolean_formula object
     """
     return isinstance(obj, (CNFFormula, L))
 

@@ -1,6 +1,6 @@
-from .cnf_objects import L
+from .boolean_objects import L
 from .constants import Tautology, Contradiction
-from .shortcuts import is_cnf_formula, and_, or_
+from .shortcuts import is_boolean_formula, and_, or_
 
 __all__ = [
     'L',
@@ -8,5 +8,5 @@ __all__ = [
     'or_',
     'Tautology',
     'Contradiction',
-    'is_cnf_formula'
+    'is_boolean_formula'
 ]

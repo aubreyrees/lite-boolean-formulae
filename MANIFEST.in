@@ -1,4 +1,4 @@
-graft lite_cnf_formulae
+graft lite_boolean_formulae
 include LICENSE
 include MANIFEST.in
 include README.rst
