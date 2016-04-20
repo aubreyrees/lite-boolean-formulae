@@ -63,11 +63,12 @@ Constants
 
 **lite_boolean_formulae.Tautology**
 
-A constant that is boolean_formula object that represents a logical tautology.
+A constant that is a boolean_formula object that represents a logical
+tautology.
 
 **lite_boolean_formulae.Contradiction**
 
-A constant that is boolean_formula object that represents a logical.
+A constant that is a boolean_formula object that represents a logical
 condtriction.
 
 Utility Methods
