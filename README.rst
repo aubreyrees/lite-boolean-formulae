@@ -3,7 +3,7 @@ Lite Boolean Formulae
 =====================
 
 This module helps with the building of smallish boolean formulae. This module
-represents expresses boolean formulae in CNF internally.
+expresses boolean formulae in CNF internally.
 
 boolean_formula Objects
 =======================
@@ -77,11 +77,11 @@ Utility Methods
 
 Returns whether ``obj`` is a boolean_formula object.
 
-**lite_boolean_formulae.or_(*objs)**
+**lite_boolean_formulae.or_(obj1, obj2, ...)**
 
 Shortcut that is equivelent to ``L(obj1) | L(obj2) | ...``.
 
-**lite_boolean_formulae.and_(*objs)**
+**lite_boolean_formulae.and_(obj1, obj2, ...)**
 
 Shortcut that is equivelent to ``L(obj1) & L(obj2) & ...``.
 
