@@ -21,9 +21,6 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-test_req = ['pytest', 'pytest-cov']
-
-
 setup(
     name='lite-cnf-formulae',
     version='0.1a1',
@@ -41,4 +38,6 @@ setup(
     ],
     keywords='utils',
     packages=["lite_cnf_formulae"],
+    tests_require = ['pytest', 'pytest-cov'],
+    cmdclass = {'test': PyTest}
 )
