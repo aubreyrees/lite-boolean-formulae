@@ -9,7 +9,7 @@ __all__ = [
     "or_",
     "Tautology",
     "Contradiction",
-    "is_boolean_formula"
+    "is_boolean_formula",
     "is_tautology",
     "is_contradiction",
 ]
