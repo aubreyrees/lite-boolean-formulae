@@ -1,13 +1,6 @@
 import operator
 import functools
-from .boolean_objects import CNFFormula, L
-
-
-def is_boolean_formula(obj):
-    """
-    Returns whether obj is a boolean_formula object
-    """
-    return isinstance(obj, (CNFFormula, L))
+from .boolean_objects import L
 
 
 def or_(*objs):

@@ -1,15 +1,16 @@
 import itertools
 import operator
 import six
-from .utils.immutable_class import ImmutableClass
+from .checks import is_tautology, is_contradiction
 from .constants import Tautology, Contradiction
+from .utils.immutable_class import ImmutableClass
 
 
 class CNFObj(ImmutableClass):
     def __and__(self, obj):
-        if obj is Contradiction:
+        if is_contradiction(obj):
             return obj
-        elif obj is Tautology:
+        elif is_tautology(obj):
             return self
         elif isinstance(obj, (L, CNFFormula)):
             return CNFFormula.build(self.clauses | obj.clauses)
@@ -19,9 +20,9 @@ class CNFObj(ImmutableClass):
             ).format(self.__class__.__name__, obj.__class__.__name__))
 
     def __or__(self, obj):
-        if obj is Contradiction:
+        if is_contradiction(obj):
             return self
-        elif obj is Tautology:
+        elif is_tautology(obj):
             return obj
         elif isinstance(obj, (L, CNFFormula)):
             product = itertools.product(self.clauses, obj.clauses)
@@ -50,7 +51,7 @@ class CNFFormula(CNFObj):
         clauses = set(clauses)
 
         for clause in clauses:
-            if clause is Contradiction:
+            if is_contradiction(clause):
                 return var
             elif isinstance(clause, CNFClause):
                 if len(clause.vars) == 1:
@@ -101,7 +102,7 @@ class CNFClause(ImmutableClass):
         vars = set(vars)
 
         for var in vars:
-            if var is Tautology:
+            if is_tautology(var):
                 return var
             elif isinstance(var, L):
                 if ~var in vars:
@@ -115,9 +116,9 @@ class CNFClause(ImmutableClass):
             return Contradiction
 
     def __or__(self, obj):
-        if obj is Contradiction:
+        if is_contradiction(obj):
             return self
-        elif obj is Tautology:
+        elif is_tautology(obj):
             return obj
         elif isinstance(obj, CNFClause):
             clause = self.vars | obj.vars
