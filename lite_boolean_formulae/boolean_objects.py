@@ -1,6 +1,6 @@
 import itertools
 import operator
-import functools
+import six
 from .utils.immutable_class import ImmutableClass
 from .constants import Tautology, Contradiction
 
@@ -68,15 +68,15 @@ class CNFFormula(CNFObj):
 
     def __invert__(self):
         formulae = (~x for x in self.clauses)
-        return functools.reduce(operator.or_, formulae)
+        return six.moves.reduce(operator.or_, formulae)
 
     def substitute(self, var, formula):
         bits = (s.substitute(var, formula) for s in self.clauses)
-        return functools.reduce(operator.and_, bits)
+        return six.moves.reduce(operator.and_, bits)
 
     def get_literals(self):
         bits = (s.get_literals() for s in self.clauses)
-        return functools.reduce(operator.or_, bits)
+        return six.moves.reduce(operator.or_, bits)
 
     def __hash__(self):
         return hash(self.clauses)
@@ -135,11 +135,11 @@ class CNFClause(ImmutableClass):
 
     def substitute(self, var, formula):
         bits = (v.substitute(var, formula) for v in self.vars)
-        return functools.reduce(operator.or_, bits)
+        return six.moves.reduce(operator.or_, bits)
 
     def get_literals(self):
         bits = (v.get_literals() for v in self.vars)
-        return functools.reduce(operator.or_, bits)
+        return six.moves.reduce(operator.or_, bits)
 
     def __hash__(self):
         return hash(self.vars)

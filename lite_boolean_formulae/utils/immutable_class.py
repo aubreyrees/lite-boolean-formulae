@@ -1,3 +1,4 @@
+import six
 from .pp import pp_class
 
 
@@ -6,7 +7,8 @@ class ImmutableBase(type):
         raise AttributeError("Cannot alter '{}' class".format(pp_class(cls)))
 
 
-class ImmutableClass(object, metaclass=ImmutableBase):
+@six.add_metaclass(ImmutableBase)
+class ImmutableClass(object):
     _frozen = False
 
     def __setattr__(self, name, value):
