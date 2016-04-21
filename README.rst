@@ -125,7 +125,7 @@ Example Usage
   Out[12]: ('a' | 'c') & ('a' | 'd')
   In [13]: (L('a') | L('b')).substitute('b', Tautology)
   Out[13]: Tautology
-  In [14]: ((L('a') | L('c')) & (L('a') | L('d'))).get_literals()
-  Out[14]: frozenset({'a','b','d'})
+  In [14]: ((L('a') | L('b')) & (L('a') | L('c'))).get_literals()
+  Out[14]: frozenset({'a','b','c'})
   In [15]: 'a' in ((L('a') | L('c')) & (L('a') | L('d')))
   Out[15]: True
