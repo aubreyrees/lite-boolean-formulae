@@ -76,7 +76,16 @@ Utility Methods
 
 **lite_boolean_formulae.is_boolean_formula(obj)**
 
-Returns whether ``obj`` is a boolean_formula object.
+Returns ``True`` if ``obj`` is a boolean_formula object, and ``False``
+otherwise.
+
+**lite_boolean_formulae.is_tautology(obj)**
+
+Returns ``True`` if ``obj`` is a tautology, and ``False`` otherwise.
+
+**lite_boolean_formulae.is_contradiction()**
+
+Returns ``True`` if ``obj`` is a contradiction, and ``False`` otherwise.
 
 **lite_boolean_formulae.or_(obj1, obj2, ...)**
 
