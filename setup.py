@@ -36,6 +36,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
+    install_requires=["six"],
     keywords='utils',
     packages=["lite_boolean_formulae"],
     tests_require = ['pytest', 'pytest-cov'],
