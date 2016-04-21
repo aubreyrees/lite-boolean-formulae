@@ -83,7 +83,7 @@ otherwise.
 
 Returns ``True`` if ``obj`` is a tautology, and ``False`` otherwise.
 
-**lite_boolean_formulae.is_contradiction()**
+**lite_boolean_formulae.is_contradiction(obj)**
 
 Returns ``True`` if ``obj`` is a contradiction, and ``False`` otherwise.
 
