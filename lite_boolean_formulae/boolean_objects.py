@@ -42,10 +42,10 @@ class CNFFormula(CNFObj):
     def build(cls, clauses):
         def build(singles, clauses):
             negated_singles = set(~s for s in singles)
-            for s in clauses:
-                if isinstance(s, CNFClause):
-                    if len(s.vars) == 1 or s.vars.isdisjoint(singles):
-                        yield CNFClause.build(s.vars - negated_singles)
+            for c in clauses:
+                if isinstance(c, CNFClause):
+                    if len(c.literals) == 1 or c.literals.isdisjoint(singles):
+                        yield CNFClause.build(c.literals - negated_singles)
 
         singles = set()
         clauses = set(clauses)
@@ -54,12 +54,12 @@ class CNFFormula(CNFObj):
             if is_contradiction(clause):
                 return var
             elif isinstance(clause, CNFClause):
-                if len(clause.vars) == 1:
-                    var = next(iter(clause.vars))
-                    if ~var in singles:
+                if len(clause.literals) == 1:
+                    literal = next(iter(clause.literals))
+                    if ~literal in singles:
                         return Contradiction
                     else:
-                        singles.add(var)
+                        singles.add(literal)
 
         formula = frozenset(build(singles, clauses))
         if formula:
@@ -93,25 +93,25 @@ class CNFFormula(CNFObj):
 
 
 class CNFClause(ImmutableClass):
-    def __init__(self, vars):
-        self.vars = vars
+    def __init__(self, literals):
+        self.literals = literals
         self._frozen = True
 
     @classmethod
-    def build(cls, vars):
-        vars = set(vars)
+    def build(cls, raw_literals):
+        literal_set = set(raw_literals)
 
-        for var in vars:
-            if is_tautology(var):
-                return var
-            elif isinstance(var, L):
-                if ~var in vars:
+        for literal in literal_set:
+            if is_tautology(literal):
+                return literal
+            elif isinstance(literal, L):
+                if ~literal in literal_set:
                     return Tautology
 
-        clause = frozenset(v for v in vars if var is not Contradiction)
+        literals = frozenset(l for l in literal_set if l is not Contradiction)
 
-        if clause:
-            return cls(clause)
+        if literals:
+            return cls(literals)
         else:
             return Contradiction
 
@@ -121,7 +121,7 @@ class CNFClause(ImmutableClass):
         elif is_tautology(obj):
             return obj
         elif isinstance(obj, CNFClause):
-            clause = self.vars | obj.vars
+            clause = self.literals | obj.literals
             return CNFClause.build(clause)
         else:
             raise TypeError((
@@ -130,32 +130,32 @@ class CNFClause(ImmutableClass):
 
     def __invert__(self):
         def build():
-            for x in self.vars:
+            for x in self.literals:
                 yield CNFClause.build(set((~x,)))
         return CNFFormula.build(build())
 
     def substitute(self, var, formula):
-        bits = (v.substitute(var, formula) for v in self.vars)
+        bits = (v.substitute(var, formula) for v in self.literals)
         return six.moves.reduce(operator.or_, bits)
 
     def get_literals(self):
-        bits = (v.get_literals() for v in self.vars)
+        bits = (v.get_literals() for v in self.literals)
         return six.moves.reduce(operator.or_, bits)
 
     def __hash__(self):
-        return hash(self.vars)
+        return hash(self.literals)
 
     def __eq__(self, obj):
         return (
             isinstance(obj, CNFClause) and
-            obj.vars == self.vars
+            obj.literals == self.literals
         )
 
     def __repr__(self):
-        return ' | '.join(repr(s) for s in self.vars)
+        return ' | '.join(repr(s) for s in self.literals)
 
     def __contains__(self, obj):
-        return any(obj in s for s in self.vars)
+        return any(obj in s for s in self.literals)
 
 
 class L(CNFObj):
@@ -193,11 +193,11 @@ class L(CNFObj):
             self.negated == obj.negated
         )
 
-    def __repr__(self):
+    def __repr__(self):     #pragma: no cover
         if self.negated:
-            return '~ {}'.format(repr(self.var))
+            return "~ L({})".format(repr(self.var))
         else:
-            return repr(self.var)
+            return "L({})".format(repr(self.var))
 
     def __contains__(self, obj):
         return obj == self.var
