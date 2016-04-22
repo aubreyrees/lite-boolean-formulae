@@ -1,6 +1,7 @@
 import itertools
 import operator
 import six
+import sys
 from .checks import is_tautology, is_contradiction
 from .constants import Tautology, Contradiction
 from .utils.immutable_class import ImmutableClass
@@ -91,6 +92,18 @@ class CNFFormula(CNFObj):
     def __contains__(self, obj):
         return any(obj in s for s in self.clauses)
 
+    if sys.version_info < (3, 0):   # pragma: no cover
+        def __unicode__(self):
+            clauses = u') & ('.join(unicode(s) for s in self.clauses)
+            return u'({})'.format(clauses)
+
+        def __str__(self):
+            return unicode(self).encode("utf-8")
+    else:   # pragma: no cover
+        def __str__(self):
+            clauses = u') & ('.join(unicode(s) for s in self.clauses)
+            return u'({})'.format(clauses)
+
 
 class CNFClause(ImmutableClass):
     def __init__(self, literals):
@@ -157,6 +170,18 @@ class CNFClause(ImmutableClass):
     def __contains__(self, obj):
         return any(obj in s for s in self.literals)
 
+    if sys.version_info < (3, 0):   # pragma: no cover
+        def __unicode__(self):
+            literals = u' | '.join(unicode(s) for s in self.clauses)
+            return u'({})'.format(literals)
+
+        def __str__(self):
+            return unicode(self).encode("utf-8")
+    else:   # pragma: no cover
+        def __str__(self):
+            literals = u') & ('.join(unicode(s) for s in self.clauses)
+            return u'({})'.format(literals)
+
 
 class L(CNFObj):
     def __init__(self, var, negated=False):
@@ -193,7 +218,7 @@ class L(CNFObj):
             self.negated == obj.negated
         )
 
-    def __repr__(self):     #pragma: no cover
+    def __repr__(self):
         if self.negated:
             return "~ L({})".format(repr(self.var))
         else:
@@ -201,3 +226,13 @@ class L(CNFObj):
 
     def __contains__(self, obj):
         return obj == self.var
+
+    if sys.version_info < (3, 0):   # pragma: no cover
+        def __unicode__(self):
+            return u'L({})'.format(self.var)
+
+        def __str__(self):
+            return unicode(self).encode("utf-8")
+    else:   # pragma: no cover
+        def __str__(self):
+            return u'L({})'.format(self.var)
