@@ -1,10 +1,4 @@
-from lite_boolean_formulae import (
-    L,
-    Tautology,
-    Contradiction,
-    is_contradiction,
-    is_tautology
-)
+from lite_boolean_formulae import L
 
 
 def test_reflexive():
@@ -12,11 +6,11 @@ def test_reflexive():
 
 
 def test_conjunction_with_negation():
-    assert is_contradiction(L("x") & (~L("x")))
+    assert ((L("x") & (~L("x"))) is False)
 
 
 def test_disjunction_with_negation():
-    assert is_tautology(L("x") | (~L("x")))
+    assert ((L("x") | (~L("x"))) is True)
 
 
 def test_and_commutative():
@@ -47,25 +41,45 @@ def double_negation():
     assert (~(~L("x"))) == L("x")
 
 
-def test_negate_tautology():
-    assert is_contradiction(~Tautology)
-
-
-def test_negate_contradiction():
-    assert is_tautology(~Contradiction)
-
-
 def test_tautology_with_and():
-    assert (Tautology & L("x")) == L("x") and (L("x") & Tautology) == L("x")
+    assert (True & L("x")) == L("x") and (L("x") & True) == L("x")
 
 
 def test_tautology_with_or():
-    assert is_tautology(Tautology | L("x")) and is_tautology(L("x") | Tautology )
+    assert ((True | L("x")) is True) and ((L("x") | True ) is True)
 
 
 def test_contradiction_with_and():
-    assert is_contradiction(Contradiction & L("x")) and is_contradiction(L("x") & Contradiction )
+    assert ((False & L("x")) is False) and ((L("x") & False) is False)
 
 
 def test_contradiction_with_or():
-    assert (Contradiction | L("x")) == L("x") and (L("x") | Contradiction) == L("x")
+    assert (False | L("x")) == L("x") and (L("x") | False) == L("x")
+
+
+def test_tautology_with_and_formula():
+    f = L("x") & L("y")
+    assert (True & f) == f and (f & True) == f
+
+
+def test_tautology_with_or_formula():
+    f = L("x") | L("y")
+    assert ((True | f) is True) and ((f | True) is True)
+
+
+def test_contradiction_with_and_formula():
+    f = L("x") & L("y")
+    assert ((False & f) is False) and ((f & False) is False)
+
+
+def test_contradiction_with_or():
+    f = L("x") | L("y")
+    assert (False | f) == f and (f | False) == f
+
+
+def test_substitute_tautology_into_disjuction():
+    assert ((L("x") | L("y")).substitute("x", True)) is True
+
+
+def test_substitute_contradiction_into_conjunction():
+    assert ((L("x") & L("y")).substitute("x", False) is False)

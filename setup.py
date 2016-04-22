@@ -16,6 +16,9 @@ class PyTest(TestCommand):
         self.test_suite = True
 
     def run_tests(self):
+        if self.distribution.tests_require:
+            self.distribution.fetch_build_eggs(self.distribution.tests_require)
+
         import pytest
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)

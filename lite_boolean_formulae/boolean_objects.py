@@ -2,16 +2,14 @@ import itertools
 import operator
 import six
 import sys
-from .checks import is_tautology, is_contradiction
-from .constants import Tautology, Contradiction
 from .utils.immutable_class import ImmutableClass
 
 
-class CNFObj(ImmutableClass):
-    def __and__(self, obj):
-        if is_contradiction(obj):
+class CNFPublic(ImmutableClass):
+    def _conjunction(self, obj):
+        if obj is False:
             return obj
-        elif is_tautology(obj):
+        elif obj is True:
             return self
         elif isinstance(obj, (L, CNFFormula)):
             return CNFFormula.build(self.clauses | obj.clauses)
@@ -20,10 +18,10 @@ class CNFObj(ImmutableClass):
                 "unsupported operand type(s) for &: '{}' and '{}'"
             ).format(self.__class__.__name__, obj.__class__.__name__))
 
-    def __or__(self, obj):
-        if is_contradiction(obj):
+    def _disjunction(self, obj):
+        if obj is False:
             return self
-        elif is_tautology(obj):
+        elif obj is True:
             return obj
         elif isinstance(obj, (L, CNFFormula)):
             product = itertools.product(self.clauses, obj.clauses)
@@ -33,8 +31,20 @@ class CNFObj(ImmutableClass):
                 "unsupported operand type(s) for |: '{}' and '{}'"
             ).format(self.__class__.__name__, obj.__class__.__name__))
 
+    def __and__(self, obj):
+        return self._conjunction( obj)
 
-class CNFFormula(CNFObj):
+    def __rand__(self, obj):
+        return self._conjunction(obj)
+
+    def __or__(self, obj):
+        return self._disjunction(obj)
+
+    def __ror__(self, obj):
+        return self._disjunction(obj)
+
+
+class CNFFormula(CNFPublic):
     def __init__(self, clauses):
         self.clauses = clauses
         self._frozen = True
@@ -52,13 +62,13 @@ class CNFFormula(CNFObj):
         clauses = set(clauses)
 
         for clause in clauses:
-            if is_contradiction(clause):
+            if clause is False:
                 return var
             elif isinstance(clause, CNFClause):
                 if len(clause.literals) == 1:
                     literal = next(iter(clause.literals))
                     if ~literal in singles:
-                        return Contradiction
+                        return False
                     else:
                         singles.add(literal)
 
@@ -66,14 +76,14 @@ class CNFFormula(CNFObj):
         if formula:
             return cls(formula)
         else:
-            return Tautology
+            return True
 
     def __invert__(self):
         formulae = (~x for x in self.clauses)
         return six.moves.reduce(operator.or_, formulae)
 
     def substitute(self, var, formula):
-        bits = (s.substitute(var, formula) for s in self.clauses)
+        bits = (c.substitute(var, formula) for c in self.clauses)
         return six.moves.reduce(operator.and_, bits)
 
     def get_literals(self):
@@ -101,7 +111,7 @@ class CNFFormula(CNFObj):
             return unicode(self).encode("utf-8")
     else:   # pragma: no cover
         def __str__(self):
-            clauses = u') & ('.join(unicode(s) for s in self.clauses)
+            clauses = u') & ('.join(str(s) for s in self.clauses)
             return u'({})'.format(clauses)
 
 
@@ -111,35 +121,15 @@ class CNFClause(ImmutableClass):
         self._frozen = True
 
     @classmethod
-    def build(cls, raw_literals):
-        literal_set = set(raw_literals)
+    def build(cls, literals):
+        for literal in literals:
+            if ~literal in literals:
+                return True
 
-        for literal in literal_set:
-            if is_tautology(literal):
-                return literal
-            elif isinstance(literal, L):
-                if ~literal in literal_set:
-                    return Tautology
-
-        literals = frozenset(l for l in literal_set if l is not Contradiction)
-
-        if literals:
-            return cls(literals)
-        else:
-            return Contradiction
+        return cls(frozenset(literals))
 
     def __or__(self, obj):
-        if is_contradiction(obj):
-            return self
-        elif is_tautology(obj):
-            return obj
-        elif isinstance(obj, CNFClause):
-            clause = self.literals | obj.literals
-            return CNFClause.build(clause)
-        else:
-            raise TypeError((
-                "unsupported operand type(s) for |: '{}' and '{}'"
-            ).format(self.__class__.__name__, obj.__class__.__name__))
+        return CNFClause.build(self.literals | obj.literals)
 
     def __invert__(self):
         def build():
@@ -148,7 +138,7 @@ class CNFClause(ImmutableClass):
         return CNFFormula.build(build())
 
     def substitute(self, var, formula):
-        bits = (v.substitute(var, formula) for v in self.literals)
+        bits = (l.substitute(var, formula) for l in self.literals)
         return six.moves.reduce(operator.or_, bits)
 
     def get_literals(self):
@@ -172,18 +162,18 @@ class CNFClause(ImmutableClass):
 
     if sys.version_info < (3, 0):   # pragma: no cover
         def __unicode__(self):
-            literals = u' | '.join(unicode(s) for s in self.clauses)
+            literals = u' | '.join(unicode(l) for l in self.literals)
             return u'({})'.format(literals)
 
         def __str__(self):
             return unicode(self).encode("utf-8")
     else:   # pragma: no cover
         def __str__(self):
-            literals = u') & ('.join(unicode(s) for s in self.clauses)
+            literals = u') | ('.join(str(l) for l in self.literals)
             return u'({})'.format(literals)
 
 
-class L(CNFObj):
+class L(CNFPublic):
     def __init__(self, var, negated=False):
         self.var = var
         self.negated = negated
@@ -209,7 +199,7 @@ class L(CNFObj):
         return frozenset((self.var,))
 
     def __hash__(self):
-        return int(str(hash(self.var)) + str(hash(self.negated)))
+        return hash(self.var) * 10 + (1 if self.negated else 0)
 
     def __eq__(self, obj):
         return (
@@ -227,12 +217,35 @@ class L(CNFObj):
     def __contains__(self, obj):
         return obj == self.var
 
+
     if sys.version_info < (3, 0):   # pragma: no cover
         def __unicode__(self):
-            return u'L({})'.format(self.var)
+            out = None
+            
+            uvar = unicode(self.var)
+            if isinstance(self.var, six.string_types):
+                out = u'L("{}")'.format(uvar.replace('"', '\\"'))
+            else:
+                out = u'L({})'.format(uvar)
+
+            if self.negated:
+                out = u"~" + out
+
+            return out
 
         def __str__(self):
             return unicode(self).encode("utf-8")
     else:   # pragma: no cover
         def __str__(self):
-            return u'L({})'.format(self.var)
+            out = None
+
+            svar = str(self.var)
+            if isinstance(self.var, six.string_types):
+                out = u'L("{}")'.format(svar.replace('"', '\\"'))
+            else:
+                out = u'L({})'.format(svar)
+
+            if self.negated:
+                out = u"~" + out
+
+            return out

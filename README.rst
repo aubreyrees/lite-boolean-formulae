@@ -58,19 +58,6 @@ Let ``A`` and ``B`` by boolean_formula objects
 |                          | replaced by the formula that ``B`` represents.  |
 +--------------------------+-------------------------------------------------+
 
-Constants
-=========
-
-**lite_boolean_formulae.Tautology**
-
-A constant that is a boolean_formula object that represents a logical
-tautology.
-
-**lite_boolean_formulae.Contradiction**
-
-A constant that is a boolean_formula object that represents a logical
-condtriction.
-
 Utility Methods
 ===============
 
@@ -78,14 +65,6 @@ Utility Methods
 
 Returns ``True`` if ``obj`` is a boolean_formula object, and ``False``
 otherwise.
-
-**lite_boolean_formulae.is_tautology(obj)**
-
-Returns ``True`` if ``obj`` is a tautology, and ``False`` otherwise.
-
-**lite_boolean_formulae.is_contradiction(obj)**
-
-Returns ``True`` if ``obj`` is a contradiction, and ``False`` otherwise.
 
 **lite_boolean_formulae.or_(obj1, obj2, ...)**
 
@@ -100,7 +79,7 @@ Example Usage
 
 ::
 
-  In [1]: from lite_boolean_formulae import L, Tautology, Contradiction
+  In [1]: from lite_boolean_formulae import L
   In [2]: L('x') | (L('y') & L('z'))
   Out[2]: ('x' | 'y') & ('x' | 'z') 
   In [3]: L('x') | L('x')
@@ -114,17 +93,17 @@ Example Usage
   In [7]: L('x') | (L('~x') & L('y'))
   Out[7]: ('x' | 'y')
   In [8]: L('x') & (L('~x'))
-  Out[9]: Contradiction
+  Out[9]: False
   In [9]: L('x') | ~L('x')
-  Out[9]: Tautology
-  In [10]: L('x') & Contradiction
-  Out[10]: Contradiction 
+  Out[9]: True
+  In [10]: L('x') & False
+  Out[10]: False
   In [11]: L('a').substitute('a', L('b') & L('c'))
   Out[11]: ('b') & ('c')
   In [12]: (L('a') | L('b')).substitute('b', L('c') & L('d'))
   Out[12]: ('a' | 'c') & ('a' | 'd')
-  In [13]: (L('a') | L('b')).substitute('b', Tautology)
-  Out[13]: Tautology
+  In [13]: (L('a') | L('b')).substitute('b', True)
+  Out[13]: True
   In [14]: ((L('a') | L('b')) & (L('a') | L('c'))).get_literals()
   Out[14]: frozenset({'a','b','c'})
   In [15]: 'a' in ((L('a') | L('c')) & (L('a') | L('d')))
