@@ -3,10 +3,11 @@ import operator
 import six
 import sys
 from .utils.immutable_class import ImmutableClass
+from .utils.pp import pp_class
 
 
 class CNFPublic(ImmutableClass):
-    def _conjunction(self, obj):
+    def __and__(self, obj):
         if obj is False:
             return obj
         elif obj is True:
@@ -16,9 +17,9 @@ class CNFPublic(ImmutableClass):
         else:
             raise TypeError((
                 "unsupported operand type(s) for &: '{}' and '{}'"
-            ).format(self.__class__.__name__, obj.__class__.__name__))
+            ).format(pp_class(self), pp_class(obj)))
 
-    def _disjunction(self, obj):
+    def __or__(self, obj):
         if obj is False:
             return self
         elif obj is True:
@@ -29,19 +30,13 @@ class CNFPublic(ImmutableClass):
         else:
             raise TypeError((
                 "unsupported operand type(s) for |: '{}' and '{}'"
-            ).format(self.__class__.__name__, obj.__class__.__name__))
-
-    def __and__(self, obj):
-        return self._conjunction( obj)
+            ).format(pp_class(self), pp_class(obj)))
 
     def __rand__(self, obj):
-        return self._conjunction(obj)
-
-    def __or__(self, obj):
-        return self._disjunction(obj)
+        return self.__and__(obj)
 
     def __ror__(self, obj):
-        return self._disjunction(obj)
+        return self.__or__(obj)
 
 
 class CNFFormula(CNFPublic):
