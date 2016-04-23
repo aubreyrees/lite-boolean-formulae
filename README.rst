@@ -3,13 +3,13 @@ Lite Boolean Formulae
 =====================
  
 .. image:: https://img.shields.io/badge/license-BSD-red.svg
-   :target: https://raw.githubusercontent.com/aubreystarktoller/lite-boolean-formula/master/LICENSE
+   :target: https://raw.githubusercontent.com/aubreystarktoller/lite-boolean-formulae/master/LICENSE
 
-.. image:: https://travis-ci.org/aubreystarktoller/lite-boolean-formula.svg?branch=master
-   :target: https://travis-ci.org/aubreystarktoller/lite-boolean-formula
+.. image:: https://travis-ci.org/aubreystarktoller/lite-boolean-formulae.svg?branch=master
+   :target: https://travis-ci.org/aubreystarktoller/lite-boolean-formulae
 
-.. image:: https://coveralls.io/repos/github/aubreystarktoller/lite-boolean-formula/badge.svg?branch=master
-   :target: https://coveralls.io/github/aubreystarktoller/lite-boolean-formula?branch=master 
+.. image:: https://coveralls.io/repos/github/aubreystarktoller/lite-boolean-formulae/badge.svg?branch=master
+   :target: https://coveralls.io/github/aubreystarktoller/lite-boolean-formulae?branch=master 
 
 This module helps with the building of smallish boolean formulae. This module
 expresses boolean formulae in CNF internally and does not preserve the
