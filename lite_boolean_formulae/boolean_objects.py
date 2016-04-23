@@ -15,7 +15,7 @@ class StrCompatMixin(object):
 
 class CNFPublic(ImmutableClass, StrCompatMixin):
     def _type_error(self, c, obj):
-        msg = "Unsupported operand type(s) for {}: '{}' and '{}'",
+        msg = "Unsupported operand type(s) for {}: '{}' and '{}'"
         raise TypeError(msg.format(c, pp_class(self), pp_class(obj)))
 
     def __and__(self, obj):
