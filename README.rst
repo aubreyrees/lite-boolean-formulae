@@ -6,16 +6,18 @@ This module helps with the building of smallish boolean formulae. This module
 expresses boolean formulae in CNF internally and does not preserve the
 original form of the formula.
 
-`Installation`_
-`boolean_formula Objects`_
-`Constructors`_
-`Methods and Operators`_
-`Utility Methods`_
-`Example Usage`_
-`Testing`_
-`Contributing`_
-`Authors`_
-`License`_
+**Contents**
+
+* `Installation`_
+* `boolean_formula Objects`_
+* `Constructors`_
+* `Methods and Operators`_
+* `Utility Methods`_
+* `Example Usage`_
+* `Testing`_
+* `Contributing`_
+* `Authors`_
+* `License`_
 
 Installation
 ============
