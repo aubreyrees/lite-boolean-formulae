@@ -10,7 +10,11 @@ boolean_formula Objects
    
 A boolean_formula object represents a Boolean formula. The precise
 implemention of a boolean_formula object is not defined and is considered an
-implementation detail. boolean_formula objects are immutable.
+implementation detail, but they do consist of literals which are referenced
+using labels, where a label is any hashable Python object. It is assumed that
+if two literals have the same label they are the same.
+
+boolean_formula objects are immutable.
 
 
 Constructors
@@ -18,14 +22,15 @@ Constructors
 
 **lite_boolean_formulae.L(obj)**
 
-Creates a new boolean_formula object with ``obj`` as the only literal.
+Creates a new boolean_formula object with a single literal
+with ``obj`` as it's label.
 
 Methods and Operators
 ---------------------
 Let ``A`` be a boolean_formula object and let ``B`` be either a
 boolean_formula object or a Boolean value.
 
-**A & B, B & A**
+**A & B**
 Returns either a boolean_formula object or a Boolean value that is
 the result anding ``A`` and ``B`` together.
 
