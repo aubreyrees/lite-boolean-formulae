@@ -26,13 +26,13 @@ class PyTest(TestCommand):
 
 setup(
     name='lite-boolean-formulae',
-    version='0.1a1',
+    version='0.1b1',
     description="A naive CNF implentation to help with buliding logical statements",
     author='Aubrey Stark-Toller',
     author_email='aubrey@deepearth.uk',
     license='BSD',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 3 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python :: 3.3',
