@@ -45,9 +45,9 @@ the result of oring ``A`` and ``B``.
 Returns either a boolean_formula object or a Boolean value that is
 the result of xoring ``A`` and ``B``.
 
-Not ``&``, ``|``, ``^`` are, as one would expected, associative operations.
-Also a Boolean value can either side of the operator - boolean_formula objects
-support right hand side logical operations.
+**Note:** ``&``, ``|``, ``^`` are, as one would expected, associative
+operations.  Also a Boolean value can either side of the operator -
+boolean_formula objects support right hand side logical operations.
 
 
 **~ A**
