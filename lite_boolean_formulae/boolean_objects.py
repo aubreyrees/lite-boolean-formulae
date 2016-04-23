@@ -15,7 +15,7 @@ class StrCompatMixin(object):
 
 class CNFPublic(ImmutableClass, StrCompatMixin):
     def _type_error(self, c, obj):
-        msg = "Unsupported operand type(s) for {}: '{}' and '{}'"
+        msg = 'Unsupported operand type(s) for {}: "{}" and "{}"'
         raise TypeError(msg.format(c, pp_class(self), pp_class(obj)))
 
     def __and__(self, obj):
@@ -46,11 +46,20 @@ class CNFPublic(ImmutableClass, StrCompatMixin):
         else:
             self._type_error("|", obj)
 
+    def __xor__(self, obj):
+        conjunction = self & obj
+        disjunction = self | obj
+        negated_conjunction = True if conjunction is False else ~conjunction
+        return disjunction & negated_conjunction
+
     def __rand__(self, obj):
         return self.__and__(obj)
 
     def __ror__(self, obj):
         return self.__or__(obj)
+
+    def __rxor__(self, obj):
+        return self.__xor__(obj)
 
 
 class CNFFormula(CNFPublic):
@@ -83,14 +92,6 @@ class CNFFormula(CNFPublic):
         formulae = (~x for x in self.clauses)
         return six.moves.reduce(operator.or_, formulae)
 
-    def substitute(self, var, formula):
-        bits = (c.substitute(var, formula) for c in self.clauses)
-        return six.moves.reduce(operator.and_, bits)
-
-    def get_literals(self):
-        bits = (s.get_literals() for s in self.clauses)
-        return six.moves.reduce(operator.or_, bits)
-
     def __hash__(self):
         return hash(self.clauses)
 
@@ -106,6 +107,14 @@ class CNFFormula(CNFPublic):
     def __unicode__(self):
         clauses = u') & ('.join(six.text_type(s) for s in self.clauses)
         return u'({})'.format(clauses)
+
+    def substitute(self, label, formula):
+        bits = (c.substitute(label, formula) for c in self.clauses)
+        return six.moves.reduce(operator.and_, bits)
+
+    def get_literals(self):
+        bits = (s.get_literals() for s in self.clauses)
+        return six.moves.reduce(operator.or_, bits)
 
 
 class CNFClause(ImmutableClass, StrCompatMixin):
@@ -130,14 +139,6 @@ class CNFClause(ImmutableClass, StrCompatMixin):
                 yield CNFClause.build(set((~x,)))
         return CNFFormula.build(build())
 
-    def substitute(self, var, formula):
-        bits = (l.substitute(var, formula) for l in self.literals)
-        return six.moves.reduce(operator.or_, bits)
-
-    def get_literals(self):
-        bits = (v.get_literals() for v in self.literals)
-        return six.moves.reduce(operator.or_, bits)
-
     def __hash__(self):
         return hash(self.literals)
 
@@ -157,61 +158,69 @@ class CNFClause(ImmutableClass, StrCompatMixin):
         literals = u' | '.join(six.text_type(l) for l in self.literals)
         return u'{}'.format(literals)
 
+    def substitute(self, label, formula):
+        bits = (l.substitute(label, formula) for l in self.literals)
+        return six.moves.reduce(operator.or_, bits)
+
+    def get_literals(self):
+        bits = (v.get_literals() for v in self.literals)
+        return six.moves.reduce(operator.or_, bits)
+
 
 class L(CNFPublic):
-    def __init__(self, var, negated=False):
-        self.var = var
+    def __init__(self, label, negated=False):
+        self.label = label
         self.negated = negated
         self._frozen = True
 
-    @property
-    def clauses(self):
-        return frozenset((CNFClause(frozenset((self,))),))
-
     def __invert__(self):
-        return L(self.var, negated=(not self.negated))
-
-    def substitute(self, var, formula):
-        if self.var == var:
-            if self.negated:
-                return ~formula
-            else:
-                return formula
-        else:
-            return L(self.var, self.negated)
-
-    def get_literals(self):
-        return frozenset((self.var,))
+        return L(self.label, negated=(not self.negated))
 
     def __hash__(self):
-        return hash(self.var) * 10 + (1 if self.negated else 0)
+        return hash(self.label) * 10 + (1 if self.negated else 0)
 
     def __eq__(self, obj):
         return (
             isinstance(obj, L) and
-            self.var == obj.var and
+            self.label == obj.label and
             self.negated == obj.negated
         )
 
     def __repr__(self):
         if self.negated:
-            return "~ L({})".format(repr(self.var))
+            return "~ L({})".format(repr(self.label))
         else:
-            return "L({})".format(repr(self.var))
+            return "L({})".format(repr(self.label))
 
     def __contains__(self, obj):
-        return obj == self.var
+        return obj == self.label
 
     def __unicode__(self):
         out = None
 
-        text_var = six.text_type(self.var)
-        if isinstance(self.var, six.string_types):
-            out = u'L("{}")'.format(text_var.replace('"', '\\"'))
+        text_label = six.text_type(self.label)
+        if isinstance(self.label, six.string_types):
+            out = u'L("{}")'.format(text_label.replace('"', '\\"'))
         else:
-            out = u'L({})'.format(text_var)
+            out = u'L({})'.format(text_label)
 
         if self.negated:
             out = u"~" + out
 
         return out
+
+    @property
+    def clauses(self):
+        return frozenset((CNFClause(frozenset((self,))),))
+
+    def substitute(self, label, formula):
+        if self.label == label:
+            if self.negated:
+                return ~formula
+            else:
+                return formula
+        else:
+            return L(self.label, self.negated)
+
+    def get_literals(self):
+        return frozenset((self.label,))
