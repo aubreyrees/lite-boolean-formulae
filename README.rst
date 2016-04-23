@@ -10,8 +10,8 @@ original form of the formula.
 
 * `Installation`_
 * `boolean_formula Objects`_
-* `Constructors`_
-* `Methods and Operators`_
+  - `Constructors`_
+  - `Methods and Operators`_
 * `Utility Methods`_
 * `Example Usage`_
 * `Testing`_
