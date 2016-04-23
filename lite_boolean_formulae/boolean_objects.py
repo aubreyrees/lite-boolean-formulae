@@ -1,12 +1,19 @@
 import itertools
 import operator
 import six
-import sys
-from .utils.immutable_class import ImmutableClass
 from .utils.pp import pp_class
+from .utils.immutable_class import ImmutableClass
 
 
-class CNFPublic(ImmutableClass):
+class StrCompatMixin(object):
+    def __str__(self):
+        out = self.__unicode__()
+        if six.PY2:     # pragma: no cover
+            out = out.encode("utf-8")
+        return out
+
+
+class CNFPublic(ImmutableClass, StrCompatMixin):
     def __and__(self, obj):
         if obj is False:
             return obj
@@ -25,8 +32,15 @@ class CNFPublic(ImmutableClass):
         elif obj is True:
             return obj
         elif isinstance(obj, (L, CNFFormula)):
-            product = itertools.product(self.clauses, obj.clauses)
-            return CNFFormula.build(x | y for x, y in product)
+            clauses = set()
+            for x, y in itertools.product(self.clauses, obj.clauses):
+                disjunction = x | y
+                if disjunction is not True:
+                    clauses.add(disjunction)
+            if clauses:
+                return CNFFormula.build(clauses)
+            else:
+                return True
         else:
             raise TypeError((
                 "unsupported operand type(s) for |: '{}' and '{}'"
@@ -49,29 +63,21 @@ class CNFFormula(CNFPublic):
         def build(singles, clauses):
             negated_singles = set(~s for s in singles)
             for c in clauses:
-                if isinstance(c, CNFClause):
-                    if len(c.literals) == 1 or c.literals.isdisjoint(singles):
-                        yield CNFClause.build(c.literals - negated_singles)
+                if len(c.literals) == 1 or c.literals.isdisjoint(singles):
+                    yield CNFClause.build(c.literals - negated_singles)
 
         singles = set()
         clauses = set(clauses)
 
         for clause in clauses:
-            if clause is False:
-                return var
-            elif isinstance(clause, CNFClause):
-                if len(clause.literals) == 1:
-                    literal = next(iter(clause.literals))
-                    if ~literal in singles:
-                        return False
-                    else:
-                        singles.add(literal)
+            if len(clause.literals) == 1:
+                literal = next(iter(clause.literals))
+                if ~literal in singles:
+                    return False
+                else:
+                    singles.add(literal)
 
-        formula = frozenset(build(singles, clauses))
-        if formula:
-            return cls(formula)
-        else:
-            return True
+        return cls(frozenset(build(singles, clauses)))
 
     def __invert__(self):
         formulae = (~x for x in self.clauses)
@@ -97,20 +103,12 @@ class CNFFormula(CNFPublic):
     def __contains__(self, obj):
         return any(obj in s for s in self.clauses)
 
-    if sys.version_info < (3, 0):   # pragma: no cover
-        def __unicode__(self):
-            clauses = u') & ('.join(unicode(s) for s in self.clauses)
-            return u'({})'.format(clauses)
-
-        def __str__(self):
-            return unicode(self).encode("utf-8")
-    else:   # pragma: no cover
-        def __str__(self):
-            clauses = u') & ('.join(str(s) for s in self.clauses)
-            return u'({})'.format(clauses)
+    def __unicode__(self):
+        clauses = u') & ('.join(six.text_type(s) for s in self.clauses)
+        return u'({})'.format(clauses)
 
 
-class CNFClause(ImmutableClass):
+class CNFClause(ImmutableClass, StrCompatMixin):
     def __init__(self, literals):
         self.literals = literals
         self._frozen = True
@@ -155,17 +153,9 @@ class CNFClause(ImmutableClass):
     def __contains__(self, obj):
         return any(obj in s for s in self.literals)
 
-    if sys.version_info < (3, 0):   # pragma: no cover
-        def __unicode__(self):
-            literals = u' | '.join(unicode(l) for l in self.literals)
-            return u'({})'.format(literals)
-
-        def __str__(self):
-            return unicode(self).encode("utf-8")
-    else:   # pragma: no cover
-        def __str__(self):
-            literals = u') | ('.join(str(l) for l in self.literals)
-            return u'({})'.format(literals)
+    def __unicode__(self):
+        literals = u' | '.join(six.text_type(l) for l in self.literals)
+        return u'{}'.format(literals)
 
 
 class L(CNFPublic):
@@ -212,35 +202,16 @@ class L(CNFPublic):
     def __contains__(self, obj):
         return obj == self.var
 
+    def __unicode__(self):
+        out = None
 
-    if sys.version_info < (3, 0):   # pragma: no cover
-        def __unicode__(self):
-            out = None
-            
-            uvar = unicode(self.var)
-            if isinstance(self.var, six.string_types):
-                out = u'L("{}")'.format(uvar.replace('"', '\\"'))
-            else:
-                out = u'L({})'.format(uvar)
+        text_var = six.text_type(self.var)
+        if isinstance(self.var, six.string_types):
+            out = u'L("{}")'.format(text_var.replace('"', '\\"'))
+        else:
+            out = u'L({})'.format(text_var)
 
-            if self.negated:
-                out = u"~" + out
+        if self.negated:
+            out = u"~" + out
 
-            return out
-
-        def __str__(self):
-            return unicode(self).encode("utf-8")
-    else:   # pragma: no cover
-        def __str__(self):
-            out = None
-
-            svar = str(self.var)
-            if isinstance(self.var, six.string_types):
-                out = u'L("{}")'.format(svar.replace('"', '\\"'))
-            else:
-                out = u'L({})'.format(svar)
-
-            if self.negated:
-                out = u"~" + out
-
-            return out
+        return out
