@@ -14,6 +14,10 @@ class StrCompatMixin(object):
 
 
 class CNFPublic(ImmutableClass, StrCompatMixin):
+    def _type_error(self, c, obj):
+        msg = "Unsupported operand type(s) for {}: '{}' and '{}'",
+        raise TypeError(msg.format(c, pp_class(self), pp_class(obj)))
+
     def __and__(self, obj):
         if obj is False:
             return obj
@@ -22,9 +26,7 @@ class CNFPublic(ImmutableClass, StrCompatMixin):
         elif isinstance(obj, (L, CNFFormula)):
             return CNFFormula.build(self.clauses | obj.clauses)
         else:
-            raise TypeError((
-                "unsupported operand type(s) for &: '{}' and '{}'"
-            ).format(pp_class(self), pp_class(obj)))
+            self._type_error("&", obj)
 
     def __or__(self, obj):
         if obj is False:
@@ -42,9 +44,7 @@ class CNFPublic(ImmutableClass, StrCompatMixin):
             else:
                 return True
         else:
-            raise TypeError((
-                "unsupported operand type(s) for |: '{}' and '{}'"
-            ).format(pp_class(self), pp_class(obj)))
+            self._type_error("|", obj)
 
     def __rand__(self, obj):
         return self.__and__(obj)
