@@ -100,30 +100,30 @@ Example Usage
 
   In [1]: from lite_boolean_formulae import L
   In [2]: L('x') | (L('y') & L('z'))
-  Out[2]: ('x' | 'y') & ('x' | 'z') 
+  Out[2]: (L('x') | L('y')) & (L('x') | L('z')) 
   In [3]: L('x') | L('x')
-  Out[3]: ('x')
-  In [4]: ~ L('x')
-  Out[4]: (~('x'))
-  In [5]: ~ (~ L('x'))
-  In [5]: ('x')
+  Out[3]: (L('x'))
+  In [4]: ~L('x')
+  Out[4]: ~ L('x')
+  In [5]: ~(~L('x'))
+  In [5]: L('x')
   In [6]: L('x') | (L('x') & L('y'))
-  Out[6]: ('x')
-  In [7]: L('x') | (L('~x') & L('y'))
-  Out[7]: ('x' | 'y')
+  Out[6]: (L('x'))
+  In [7]: L('x') | (~L('x') & L('y'))
+  Out[7]: (L('x') | L('y'))
   In [8]: L('x') & (L('~x'))
   Out[9]: False
   In [9]: L('x') | ~L('x')
   Out[9]: True
   In [10]: L('x') & False
   Out[10]: False
-  In [11]: L('a').substitute('a', L('b') & L('c'))
-  Out[11]: ('b') & ('c')
-  In [12]: (L('a') | L('b')).substitute('b', L('c') & L('d'))
-  Out[12]: ('a' | 'c') & ('a' | 'd')
-  In [13]: (L('a') | L('b')).substitute('b', True)
+  In [11]: L('x').substitute('x', L('y') & L('z'))
+  Out[11]: (L('y')) & (L('z'))
+  In [12]: (L('w') | L('x')).substitute('x', L('y') & L('z'))
+  Out[12]: (L('w') | L('y')) & (L('w') | L('z'))
+  In [13]: (L('x') | L('y')).substitute('y', True)
   Out[13]: True
-  In [14]: ((L('a') | L('b')) & (L('a') | L('c'))).get_literals()
-  Out[14]: frozenset({'a','b','c'})
-  In [15]: 'a' in ((L('a') | L('c')) & (L('a') | L('d')))
+  In [14]: ((L('x') | L('y')) & (L('x') | L('z'))).get_literals()
+  Out[14]: frozenset({'x','y','z'})
+  In [15]: 'x' in ((L('x') | L('y')) & (L('x') | L('z')))
   Out[15]: True
