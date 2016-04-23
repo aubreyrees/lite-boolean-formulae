@@ -34,26 +34,26 @@ def _p(*us):
 def test_and_formula_str():
     _test_str(
         L("x") & L("y"),
-        _p(u'((L("x"))) & ((L("y")))', u'((L("y"))) & ((L("x")))')
+        _p(u'(L("x")) & (L("y"))', u'(L("y")) & (L("x"))')
     )
 
 
 def test_or_formula_str():
     _test_str(
         L("x") | L("y"),
-        _p(u'((L("x")) | (L("y")))', u'((L("y")) | (L("x")))')
+        _p(u'(L("x") | L("y"))', u'(L("y") | L("x"))')
     )
 
 
 def test_and_formula_str_with_int_var():
     _test_str(
         L("x") & L(5),
-        _p(u'((L("x"))) & ((L(5)))', u'((L(5))) & ((L("x")))')
+        _p(u'(L("x")) & (L(5))', u'(L(5)) & (L("x"))')
     )
 
 
 def test_or_formula_str():
     _test_str(
         L("x") | L(5),
-        _p(u'((L("x")) | (L(5)))', u'((L(5)) | (L("x")))')
+        _p(u'(L("x") | L(5))', u'(L(5) | L("x"))')
     )
