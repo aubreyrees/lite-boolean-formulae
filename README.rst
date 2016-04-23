@@ -6,6 +6,34 @@ This module helps with the building of smallish boolean formulae. This module
 expresses boolean formulae in CNF internally and does not preserve the
 original form of the formula.
 
+`Installation`_
+`boolean_formula Objects`_
+`Constructors`_
+`Methods and Operators`_
+`Utility Methods`_
+`Example Usage`_
+`Testing`_
+`Contributing`_
+`Authors`_
+`License`_
+
+Installation
+============
+
+Suppored Python versions are: 2.7, 3.3, 3.4 and 3.5 
+
+To install using pip:
+
+::
+
+    pip install git+https://github.com/aubreystarktoller/lite-booltean-formulae.git
+
+You can obtain the source  from:
+
+::
+
+    https://github.com/aubreystarktoller/lite-boolean-formulae
+
 boolean_formula Objects
 =======================
    
@@ -127,3 +155,47 @@ Example Usage
   Out[14]: frozenset({'x','y','z'})
   In [15]: 'x' in ((L('x') | L('y')) & (L('x') | L('z')))
   Out[15]: True
+
+Testing
+=======
+
+To run the tests first clone the git repo and enter the cloned repo:
+
+::
+
+    git clone https://github.com/aubreystarktoller/django-babik-shadow-accounts
+    cd django-babik-shadow-accounts
+
+To run the tests you'll require ``make``. It is recommended that use tox to run
+the tests:
+
+::
+
+    tox
+
+To run the tests in the current environment:
+
+::
+
+    make test
+
+Contributing
+============
+
+Contributions are welcome. Please ensure the any submitted code is well
+tested.
+
+If you think you have found a security venerability in the code please report
+it **privately** by e-mailing Aubrey Stark-Toller at aubrey@deepearth.uk.
+
+Please **do not** raise it on the issue tracker, or publicly at all, until I
+have had a chance to look into it.
+
+Authors
+=======
+Aubrey Stark-Toller
+
+License
+=======
+``django-babik-shadow-accounts`` is licensed under the BSD license. See
+LICENSE for the full license
