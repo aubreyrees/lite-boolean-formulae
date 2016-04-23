@@ -31,14 +31,17 @@ Let ``A`` be a boolean_formula object and let ``B`` be either a
 boolean_formula object or a Boolean value.
 
 **A & B**
+
 Returns either a boolean_formula object or a Boolean value that is
 the result anding ``A`` and ``B`` together.
 
 **A | B**
+
 Returns either a boolean_formula object or a Boolean value that is
 the result of oring ``A`` and ``B``.
 
 **A ^ B**
+
 Returns either a boolean_formula object or a Boolean value that is
 the result of xoring ``A`` and ``B``.
 
@@ -48,6 +51,7 @@ support right hand side logical operations.
 
 
 **~ A**
+
 Returns a new boolean_formula object that is the negation of ``A``.
 
 **obj in A**
@@ -67,6 +71,7 @@ Returns ``True`` if a literal with label ``obj`` is not in ``A``, and
 Returns, as a frozenset, the labels of all the literals in ``A``.
 
 **A.subsitute(obj, B)**
+
 Returns a new boolean_formula object (or a Boolean value if the
 boolean_formula is tautology or contradiction) that is same as ``A`` but with
 all instances of the literal with label ``obj`` replaced by ``B``.
