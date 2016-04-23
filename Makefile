@@ -33,7 +33,7 @@ coverage:
 	coverage html
 
 test:
-	python setup.py test
+	python setup.py test --pytest-args="--cov=lite_boolean_formulae"
 
 install: clean
 	python setup.py install
