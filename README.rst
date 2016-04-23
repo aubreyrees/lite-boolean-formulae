@@ -3,7 +3,8 @@ Lite Boolean Formulae
 =====================
 
 This module helps with the building of smallish boolean formulae. This module
-expresses boolean formulae in CNF internally.
+expresses boolean formulae in CNF internally and does not preserve the
+original form of the formula.
 
 boolean_formula Objects
 =======================
@@ -72,9 +73,9 @@ Returns, as a frozenset, the labels of all the literals in ``A``.
 
 **A.subsitute(obj, B)**
 
-Returns a new boolean_formula object (or a Boolean value if the
-boolean_formula is tautology or contradiction) that is same as ``A`` but with
-all instances of the literal with label ``obj`` replaced by ``B``.
+Returns a new boolean_formula object (or a Boolean value if the resulting
+boolean_formula is tautology or contradiction) that is the same as ``A`` but
+with all instances of the literal with label ``obj`` replaced by ``B``.
 
 Utility Methods
 ===============
