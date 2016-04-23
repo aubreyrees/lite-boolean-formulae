@@ -22,41 +22,49 @@ Creates a new boolean_formula object with ``obj`` as the only literal.
 
 Methods and Operators
 ---------------------
-Let ``A`` and ``B`` by boolean_formula objects
+Let ``A`` be a boolean_formula object and let ``B`` be either a
+boolean_formula object or a Boolean value.
 
-+--------------------------+-------------------------------------------------+
-| ``A & B``                | Returns a new boolean_formula object that       |
-|                          | represents the formula that is the result of    |
-|                          | anding the formulae that ``A`` and ``B``        |
-|                          | represent.                                      |
-+--------------------------+-------------------------------------------------+
-| ``A | B``                | Returns a new boolean_formula object that       |
-|                          | represents the formula that is the result of    |
-|                          | oring the formulae that ``A`` and ``B``         |
-|                          | represent.                                      |
-+--------------------------+-------------------------------------------------+
-| ``~ A``                  | Returns a new boolean_formula object that       |
-|                          | reprsents the formula that is the logical       |
-|                          | negation of the formula that ``A`` represents.  |
-+--------------------------+-------------------------------------------------+
-| ``obj in A``             | Returns whether ``obj`` is a literal in the     |
-|                          | formula that ``A`` represents. Equivelent to,   |
-|                          | but more efficient than,                        |
-|                          | ``obj in A.get_literals()``                     |
-+--------------------------+-------------------------------------------------+
-| ``obj x not in A``       | Returns whether ``obj`` is not a literal in the |
-|                          | formula that ``A`` represents. Equivelent to,   |
-|                          | but more efficient than,                        | 
-|                          | ``obj not in A.get_literals()``                 |
-+--------------------------+-------------------------------------------------+
-| ``A.get_literals()``     | Returns, as a frozenset, all the literals in    |
-|                          | the formula that ``A`` represents               |
-+--------------------------+-------------------------------------------------+
-| ``A.subsitute(obj, B)``  | Returns a new boolean_formula object that       |
-|                          | represents the formula that ``A`` represents    |
-|                          | but with all instances of the literal ``obj``   |
-|                          | replaced by the formula that ``B`` represents.  |
-+--------------------------+-------------------------------------------------+
+**A & B, B & A**
+Returns either a boolean_formula object or a Boolean value that is
+the result anding ``A`` and ``B`` together.
+
+**A | B**
+Returns either a boolean_formula object or a Boolean value that is
+the result of oring ``A`` and ``B``.
+
+**A ^ B**
+Returns either a boolean_formula object or a Boolean value that is
+the result of xoring ``A`` and ``B``.
+
+Not ``&``, ``|``, ``^`` are, as one would expected, associative operations.
+Also a Boolean value can either side of the operator - boolean_formula objects
+support right hand side logical operations.
+
+
+**~ A**
+Returns a new boolean_formula object that is the negation of ``A``.
+
+**obj in A**
+
+Returns ``True`` if a literal with label ``obj`` is in ``A``, and ``False``
+otherwise. Equivelent to, but more efficient than,
+``obj not in A.get_literals()``.
+
+**obj x not in A**
+
+Returns ``True`` if a literal with label ``obj`` is not in ``A``, and 
+``False`` otherwise. Equivelent to, but more efficient than,
+``obj not in A.get_literals()``.
+
+**A.get_literals()**
+
+Returns, as a frozenset, the labels of all the literals in ``A``.
+
+**A.subsitute(obj, B)**
+Returns a new boolean_formula object (or a Boolean value if the
+boolean_formula is tautology or contradiction) that is same as ``A`` but with
+all instances of the literal with label ``obj`` replaced by ``B``.
 
 Utility Methods
 ===============
