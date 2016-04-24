@@ -207,6 +207,7 @@ have had a chance to look into it.
 Authors
 =======
 Aubrey Stark-Toller
+
 Swin Purple
 
 License
