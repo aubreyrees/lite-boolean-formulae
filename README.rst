@@ -172,25 +172,32 @@ Example Usage
 Testing
 =======
 
-You'll require ``make`` to run the tests. First clone the git repo and
-then enter the cloned repo:
+It is recommend that you use ``make`` and ``tox`` to run the tests. First
+clone the git repo and then enter the cloned repo:
 
 ::
 
     git clone https://github.com/aubreystarktoller/lite-boolean-formulae
     cd lite-boolean-formulae
 
-It is recommended that you use tox to run the tests:
+If you are using ``make`` and ``tox`` just run:
 
 ::
 
     tox
 
-To run the tests in the current environment:
+To run the tests in the current environment using ``make``:
 
 ::
 
     make test
+
+If you're not using ``make``, to run the tests in the current enviroment:
+
+::
+
+    setup.py test
+
 
 Contributing
 ============
