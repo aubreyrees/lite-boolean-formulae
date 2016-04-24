@@ -45,7 +45,13 @@ class CNFPublicMixin(ImmutableClass, StrCompatMixin):
             self._type_error("|", obj)
 
     def __xor__(self, obj):
-        if not (isinstance(obj, (L, CNFFormula)) or obj is True or obj is True):
+        if (
+            not (
+                isinstance(obj, (L, CNFFormula)) or
+                obj is True or
+                obj is False
+            )
+        ):
             self._type_error("^", obj)
 
         conjunction = self & obj
@@ -143,7 +149,7 @@ class CNFClause(ImmutableClass, StrCompatMixin):
     @classmethod
     def build(cls, literals):
         """
-        Builds a clause from the passed literals. This may return True if the 
+        Builds a clause from the passed literals. This may return True if the
         combined clauses form a tautology
         """
         for literal in literals:
@@ -251,7 +257,7 @@ class L(CNFPublicMixin):
     def substitute(self, label, formula):
         """
         If label is this literal's label returns formula (or the negation of
-        the formula if this literal is negated), otherwise returns a new 
+        the formula if this literal is negated), otherwise returns a new
         literal that is identical to this literal.
         """
         if self.label == label:

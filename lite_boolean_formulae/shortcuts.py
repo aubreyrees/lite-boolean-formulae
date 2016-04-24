@@ -12,13 +12,13 @@ def is_boolean_formula(obj):
 
 def or_(*objs):
     """
-    Shortcut method to or many variables togother
+    Shortcut method to or many literals together
     """
     return functools.reduce(operator.or_, (L(o) for o in objs))
 
 
 def and_(*objs):
     """
-    Shortcut method to and many variables togother
+    Shortcut method to and many literals together
     """
     return functools.reduce(operator.and_, (L(o) for o in objs))

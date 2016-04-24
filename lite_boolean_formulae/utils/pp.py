@@ -5,7 +5,7 @@ import six
 def pp_class(obj):
     """
     Prettify and return the passed class, or the class of the instance if an
-    instance is passed in. 
+    instance is passed in.
     """
     if not inspect.isclass(obj):
         obj = obj.__class__

@@ -11,5 +11,3 @@ class StrCompatMixin(object):
         if six.PY2:     # pragma: no cover
             out = out.encode("utf-8")
         return out
-
-
