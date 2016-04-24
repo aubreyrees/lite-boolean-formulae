@@ -11,8 +11,8 @@ Lite Boolean Formulae
 .. image:: https://coveralls.io/repos/github/aubreystarktoller/lite-boolean-formulae/badge.svg?branch=master
    :target: https://coveralls.io/github/aubreystarktoller/lite-boolean-formulae?branch=master 
 
-This module helps with the building of smallish boolean formulae. This module
-expresses boolean formulae in CNF internally and does not preserve the
+This module helps with the building of small to medium Boolean formulae. This
+module expresses Boolean formulae in CNF internally and does not preserve the
 original form of the formula.
 
 **Contents**
@@ -52,7 +52,7 @@ boolean_formula Objects
    
 A boolean_formula object represents a Boolean formula. The precise
 implemention of a boolean_formula object is not defined and is considered an
-implementation detail, but they do consist of literals which are referenced
+implementation detail but they do consist of literals which are referenced
 using labels, where a label is any hashable Python object. It is assumed that
 if two literals have the same label they are the same.
 
@@ -65,7 +65,7 @@ Constructors
 **lite_boolean_formulae.L(obj)**
 
 Creates a new boolean_formula object with a single literal
-with ``obj`` as it's label.
+with ``obj`` as its label.
 
 Methods and Operators
 ---------------------
@@ -75,7 +75,7 @@ boolean_formula object or a Boolean value.
 **A & B**
 
 Returns either a boolean_formula object or a Boolean value that is
-the result anding ``A`` and ``B`` together.
+the result of anding ``A`` and ``B`` together.
 
 **A | B**
 
@@ -87,8 +87,8 @@ the result of oring ``A`` and ``B``.
 Returns either a boolean_formula object or a Boolean value that is
 the result of xoring ``A`` and ``B``.
 
-**Note:** ``&``, ``|``, ``^`` are, as one would expected, associative
-operations.  Also a Boolean value can either side of the operator -
+**Note:** ``&``, ``|``, ``^`` are, as one would expect, associative
+operations.  Also, a Boolean value can be either side of the operator -
 boolean_formula objects support right hand side logical operations.
 
 
@@ -98,33 +98,33 @@ Returns a new boolean_formula object that is the negation of ``A``.
 
 **obj in A**
 
-Returns ``True`` if a literal with label ``obj`` is in ``A``, and ``False``
+Returns ``True`` if a literal with label ``obj`` is in ``A`` and ``False``
 otherwise. Equivelent to, but more efficient than,
 ``obj not in A.get_literals()``.
 
 **obj x not in A**
 
-Returns ``True`` if a literal with label ``obj`` is not in ``A``, and 
+Returns ``True`` if a literal with label ``obj`` is not in ``A`` and 
 ``False`` otherwise. Equivelent to, but more efficient than,
 ``obj not in A.get_literals()``.
 
 **A.get_literals()**
 
-Returns, as a frozenset, the labels of all the literals in ``A``.
+Returns the labels of all the literals in ``A`` as a frozenset.
 
 **A.subsitute(obj, B)**
 
 Returns a new boolean_formula object (or a Boolean value if the resulting
-boolean_formula is tautology or contradiction) that is the same as ``A`` but
-with all instances of the literal with label ``obj`` replaced by ``B``.
+boolean_formula is a tautology or a contradiction) that is the same as ``A``
+but with all instances of the literal with label ``obj`` replaced by ``B``.
 
 Utility Methods
 ===============
 
 **lite_boolean_formulae.is_boolean_formula(obj)**
 
-Returns ``True`` if ``obj`` is a boolean_formula object, and ``False``
-otherwise.
+Returns ``True`` if ``obj`` is a boolean_formula object and otherwise
+``False``.
 
 **lite_boolean_formulae.or_(obj1, obj2, ...)**
 
@@ -172,15 +172,15 @@ Example Usage
 Testing
 =======
 
-To run the tests first clone the git repo and enter the cloned repo:
+You'll require ``make`` to run the tests. First clone the git repo and
+then enter the cloned repo:
 
 ::
 
     git clone https://github.com/aubreystarktoller/lite-boolean-formulae
     cd lite-boolean-formulae
 
-To run the tests you'll require ``make``. It is recommended that use tox to run
-the tests:
+It is recommended that you use tox to run the tests:
 
 ::
 
@@ -195,10 +195,10 @@ To run the tests in the current environment:
 Contributing
 ============
 
-Contributions are welcome. Please ensure the any submitted code is well
+Contributions are welcome. Please ensure that any submitted code is well
 tested.
 
-If you think you have found a security venerability in the code please report
+If you think you have found a security vunerability in the code, please report
 it **privately** by e-mailing Aubrey Stark-Toller at aubrey@deepearth.uk.
 
 Please **do not** raise it on the issue tracker, or publicly at all, until I
@@ -207,6 +207,7 @@ have had a chance to look into it.
 Authors
 =======
 Aubrey Stark-Toller
+Swin Purple
 
 License
 =======
