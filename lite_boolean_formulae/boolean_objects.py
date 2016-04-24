@@ -3,17 +3,15 @@ import operator
 import six
 from .utils.pp import pp_class
 from .utils.immutable_class import ImmutableClass
+from .utils.str_compat import StrCompatMixin
 
 
-class StrCompatMixin(object):
-    def __str__(self):
-        out = self.__unicode__()
-        if six.PY2:     # pragma: no cover
-            out = out.encode("utf-8")
-        return out
-
-
-class CNFPublic(ImmutableClass, StrCompatMixin):
+class CNFPublicMixin(ImmutableClass, StrCompatMixin):
+    """
+    Objects that implement this class will be exposed to and manipulated by
+    external code. This implements all the magic methods for the binary
+    logical operators (&, | and ^).
+    """
     def _type_error(self, c, obj):
         msg = 'Unsupported operand type(s) for {}: "{}" and "{}"'
         raise TypeError(msg.format(c, pp_class(self), pp_class(obj)))
@@ -47,6 +45,9 @@ class CNFPublic(ImmutableClass, StrCompatMixin):
             self._type_error("|", obj)
 
     def __xor__(self, obj):
+        if not (isinstance(obj, (L, CNFFormula)) or obj is True or obj is True):
+            self._type_error("^", obj)
+
         conjunction = self & obj
         disjunction = self | obj
         negated_conjunction = True if conjunction is False else ~conjunction
@@ -62,13 +63,20 @@ class CNFPublic(ImmutableClass, StrCompatMixin):
         return self.__xor__(obj)
 
 
-class CNFFormula(CNFPublic):
+class CNFFormula(CNFPublicMixin):
+    """
+    Represents a Boolean formula in CNF (a conjunction of clauses).
+    """
     def __init__(self, clauses):
         self.clauses = clauses
         self._frozen = True
 
     @classmethod
     def build(cls, clauses):
+        """
+        Builds a formula using the passed clauses. This may return False
+        if the resulting formula would be a contradiction.
+        """
         def build(singles, clauses):
             negated_singles = set(~s for s in singles)
             for c in clauses:
@@ -109,21 +117,35 @@ class CNFFormula(CNFPublic):
         return u'({})'.format(clauses)
 
     def substitute(self, label, formula):
+        """
+        For all this formula's clauses' literals, if a literal has label
+        ``label`` then it is substiuted for ``formula``.
+        """
         bits = (c.substitute(label, formula) for c in self.clauses)
         return six.moves.reduce(operator.and_, bits)
 
     def get_literals(self):
+        """
+        Returns the labels of all the literals in this formula
+        """
         bits = (s.get_literals() for s in self.clauses)
         return six.moves.reduce(operator.or_, bits)
 
 
 class CNFClause(ImmutableClass, StrCompatMixin):
+    """
+    Represents a logical clause (a disjunction of literals).
+    """
     def __init__(self, literals):
         self.literals = literals
         self._frozen = True
 
     @classmethod
     def build(cls, literals):
+        """
+        Builds a clause from the passed literals. This may return True if the 
+        combined clauses form a tautology
+        """
         for literal in literals:
             if ~literal in literals:
                 return True
@@ -159,15 +181,25 @@ class CNFClause(ImmutableClass, StrCompatMixin):
         return u'{}'.format(literals)
 
     def substitute(self, label, formula):
+        """
+        For all this clause's literals, if a literal has label ``label`` then
+        it is substiuted for ``formula``.
+        """
         bits = (l.substitute(label, formula) for l in self.literals)
         return six.moves.reduce(operator.or_, bits)
 
     def get_literals(self):
+        """
+        Returns the labels of all the literals in this clause
+        """
         bits = (v.get_literals() for v in self.literals)
         return six.moves.reduce(operator.or_, bits)
 
 
-class L(CNFPublic):
+class L(CNFPublicMixin):
+    """
+    Represents a literal
+    """
     def __init__(self, label, negated=False):
         self.label = label
         self.negated = negated
@@ -211,9 +243,17 @@ class L(CNFPublic):
 
     @property
     def clauses(self):
+        """
+        Returns a CNFClause with this literal as the clause's sole literal.
+        """
         return frozenset((CNFClause(frozenset((self,))),))
 
     def substitute(self, label, formula):
+        """
+        If label is this literal's label returns formula (or the negation of
+        the formula if this literal is negated), otherwise returns a new 
+        literal that is identical to this literal.
+        """
         if self.label == label:
             if self.negated:
                 return ~formula
@@ -223,4 +263,7 @@ class L(CNFPublic):
             return L(self.label, self.negated)
 
     def get_literals(self):
+        """
+        Returns a frozenset with this literal's label as the sets sole member
+        """
         return frozenset((self.label,))
