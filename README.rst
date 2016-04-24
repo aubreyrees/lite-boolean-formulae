@@ -200,7 +200,6 @@ tested.
 
 If you think you have found a security vunerability in the code, please report
 it **privately** by e-mailing Aubrey Stark-Toller at aubrey@deepearth.uk.
-
 Please **do not** raise it on the issue tracker, or publicly at all, until I
 have had a chance to look into it.
 
