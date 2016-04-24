@@ -33,7 +33,7 @@ original form of the formula.
 Installation
 ============
 
-Suppored Python versions are: 2.7, 3.3, 3.4 and 3.5 
+Suppored Python versions are: 2.7, 3.3, 3.4 and 3.5.
 
 To install using pip:
 
@@ -99,13 +99,13 @@ Returns a new boolean_formula object that is the negation of ``A``.
 **obj in A**
 
 Returns ``True`` if a literal with label ``obj`` is in ``A`` and ``False``
-otherwise. Equivelent to, but more efficient than,
+otherwise. Equivalent to, but more efficient than,
 ``obj not in A.get_literals()``.
 
 **obj x not in A**
 
 Returns ``True`` if a literal with label ``obj`` is not in ``A`` and 
-``False`` otherwise. Equivelent to, but more efficient than,
+``False`` otherwise. Equivalent to, but more efficient than,
 ``obj not in A.get_literals()``.
 
 **A.get_literals()**
@@ -128,11 +128,11 @@ Returns ``True`` if ``obj`` is a boolean_formula object and otherwise
 
 **lite_boolean_formulae.or_(obj1, obj2, ...)**
 
-Shortcut that is equivelent to ``L(obj1) | L(obj2) | ...``.
+Shortcut that is equivalent to ``L(obj1) | L(obj2) | ...``.
 
 **lite_boolean_formulae.and_(obj1, obj2, ...)**
 
-Shortcut that is equivelent to ``L(obj1) & L(obj2) & ...``.
+Shortcut that is equivalent to ``L(obj1) & L(obj2) & ...``.
 
 Example Usage
 =============
@@ -173,7 +173,7 @@ Testing
 =======
 
 It is recommend that you use ``make`` and ``tox`` to run the tests. First
-clone the git repo and then enter the cloned repo:
+clone the git repository and then enter the cloned repository:
 
 ::
 
@@ -192,7 +192,7 @@ To run the tests in the current environment using ``make``:
 
     make test
 
-If you're not using ``make``, to run the tests in the current enviroment:
+If you're not using ``make`` to run the tests in the current environment:
 
 ::
 
@@ -205,7 +205,7 @@ Contributing
 Contributions are welcome. Please ensure that any submitted code is well
 tested.
 
-If you think you have found a security vunerability in the code, please report
+If you think you have found a security vulnerability in the code, please report
 it **privately** by e-mailing Aubrey Stark-Toller at aubrey@deepearth.uk.
 Please **do not** raise it on the issue tracker, or publicly at all, until I
 have had a chance to look into it.
@@ -213,9 +213,9 @@ have had a chance to look into it.
 Authors
 =======
 * Aubrey Stark-Toller
-* Swin Purple
+* Swin Purple (proof reader)
 
 License
 =======
 lite-boolean-formula is licensed under the BSD license. See
-LICENSE for the full license
+LICENSE for the full license.
