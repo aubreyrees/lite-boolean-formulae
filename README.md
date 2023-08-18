@@ -31,13 +31,13 @@ if two literals are equal if there labels are equale.
 Boolean formula objects are immutable.
 
 
-## Constructors
+### Constructors
 
 **lite_boolean_formulae.L(obj)**
 
 Create a boolean formula consisting of only a literal with label `obj`.
 
-# Methods and Operators
+### Methods and Operators
 
 **A & B**
 
@@ -70,7 +70,7 @@ Return a frozen containing the labels of all the literals in formula `A`.
 
 Create a new formula by replacing all literals with label `obj` with formula `B`.
 
-# Utility Methods
+### Utility Methods
 
 **lite_boolean_formulae.is_boolean_formula(obj)**
 
@@ -84,7 +84,7 @@ Equivalent to `L(obj1) | L(obj2) | ...`.
 
 Equivalent to `L(obj1) & L(obj2) & ...`.
 
-## Example Usage
+### Example Usage
 
 ```
 In [1]: from lite_boolean_formulae import L
