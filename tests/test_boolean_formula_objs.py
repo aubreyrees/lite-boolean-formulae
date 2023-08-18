@@ -1,6 +1,14 @@
 import re
 from lite_boolean_formulae import L
-from .utils import _test_str, _test_repr
+
+
+def _test_str(cls, r):
+    assert re.match(f"^{r}$", str(cls))
+
+
+def _test_repr(obj):
+    assert isinstance(repr(obj), str)
+
 
 
 def test_repr_formula():
@@ -16,11 +24,11 @@ def test_repr_negated_literal():
 
 
 def test_literal_str():
-    _test_str(L("x"), u'L\\("x"\\)')
+    assert str(L("x")) == 'L("x")'
 
 
 def test_negated_literal_str():
-    _test_str(~L("x"), u'~L\\("x"\\)')
+    assert str(~L("x")) == '~L("x")'
 
 
 def _e(u):
@@ -28,32 +36,32 @@ def _e(u):
 
 
 def _p(*us):
-    return u"(" + u"|".join(_e(u) for u in us) + u")"
+    return "(" + "|".join(_e(u) for u in us) + ")"
 
 
 def test_and_formula_str():
     _test_str(
         L("x") & L("y"),
-        _p(u'(L("x")) & (L("y"))', u'(L("y")) & (L("x"))')
+        _p('(L("x")) & (L("y"))', '(L("y")) & (L("x"))')
     )
 
 
 def test_or_formula_str():
     _test_str(
         L("x") | L("y"),
-        _p(u'(L("x") | L("y"))', u'(L("y") | L("x"))')
+        _p('(L("x") | L("y"))', '(L("y") | L("x"))')
     )
 
 
 def test_and_formula_str_with_int_var():
     _test_str(
         L("x") & L(5),
-        _p(u'(L("x")) & (L(5))', u'(L(5)) & (L("x"))')
+        _p('(L("x")) & (L(5))', '(L(5)) & (L("x"))')
     )
 
 
 def test_or_formula_str():
     _test_str(
         L("x") | L(5),
-        _p(u'(L("x") | L(5))', u'(L(5) | L("x"))')
+        _p('(L("x") | L(5))', '(L(5) | L("x"))')
     )

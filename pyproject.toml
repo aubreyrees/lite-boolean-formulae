@@ -1,0 +1,53 @@
+[project]
+name = "lite_boolean_formulae"
+version = "1.0"
+description = "Ulities to build small Boolean formulae"
+authors = [
+  { name = "Aubrey Rees", email = "aubrey@kleetope.net" }
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 5 - Production/Stable"
+]
+requires-python = ">=3.8"
+
+[project.urls]
+"Homepage" = "https://github.com/aubreyrees/lite-boolean-formulae"
+"Bug Tracker" = "https://github.com/aubreyrees/lite-boolean-formulae/issues"
+
+[project.optional-dependencies]
+dev = ["tox","pytest","coverage","ruff","build","ipython"]
+build = ["tox","build"]
+
+[build-system]
+requires = ["setuptools >= 68.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
+
+[tool.ruff]
+select = ["E", "F" ,"W" ,"N","D","ANN"]
+src = ["src"]
+ignore = ["D212", "D203", "ANN102"]
+line-length = 88
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+target-version = "py311"
+
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+
+[tool.coverage.run]
+branch = true
+source = ["lite_boolean_formulae"]
+
+
+[tool.setuptools]
+include-package-data = false
+package-dir = {"" = "src"}

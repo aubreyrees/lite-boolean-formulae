@@ -1,24 +1,16 @@
+"""Shortcut functions for common tasks."""
+
+
 import operator
 import functools
-from .boolean_objects import CNFFormula, L
+from .boolean_objects import L, CNFFormula
 
 
-def is_boolean_formula(obj):
-    """
-    Returns whether obj is a boolean_formula object
-    """
-    return isinstance(obj, (CNFFormula, L))
+def or_(*objs: object) -> CNFFormula | L | bool:
+    """Return the disjunction of the passed literals."""
+    return functools.reduce(operator.or_, (L(o, False) for o in objs))
 
 
-def or_(*objs):
-    """
-    Shortcut method to or many literals together
-    """
-    return functools.reduce(operator.or_, (L(o) for o in objs))
-
-
-def and_(*objs):
-    """
-    Shortcut method to and many literals together
-    """
-    return functools.reduce(operator.and_, (L(o) for o in objs))
+def and_(*objs: object) -> CNFFormula | L | bool:
+    """Return the conjunction of the passed literals."""
+    return functools.reduce(operator.and_, (L(o, False) for o in objs))

@@ -1,11 +1,21 @@
 help:
-	@echo "clean - remove all build, test, coverage and Python artifacts"
-	@echo "clean-build - remove build artifacts"
-	@echo "clean-pyc - remove Python file artifacts"
-	@echo "clean-test - remove test and coverage artifacts"
-	@echo "test - run tests with the active Python binary"
-	@echo "coverage - check code coverage with the active Python binary"
-	@echo "install - install the package to the active Python's site-packages"
+	@echo "clean          run \`clean-build\`, \`clean-pyc\` & \`clean-test\` targets"
+	@echo "clean-build    remove build artifacts"
+	@echo "clean-pyc      remove Python file artifacts"
+	@echo "clean-test     remove test and coverage artifacts"
+	@echo "clean-venv     remove the dev tools virtual enviroment"
+	@echo "test           run \`pytest\` on the project"
+	@echo "tox            run \`tox\` on the project"
+	@echo "coverage       run \`coverage\` and generate a report"
+	@echo "lint           lint the project using \`ruff\`"
+	@echo "lint-test      lint the tests using \`ruff\`"
+	@echo "install        install the package locally"
+	@echo "install-build  install the package & its extra build dependencies"
+	@echo "install-dev    install the package & its extra dev dependencies"
+	@echo "build-only     build the package"
+	@echo "build          run \`install-build\`, \`tox\` & \`build-only\` targets"
+	@echo "im             starts Python in interactive mode; uses \`ipython\`"
+	@echo "help           print this messsage"
 
 clean: clean-test clean-build clean-pyc
 
@@ -23,17 +33,44 @@ clean-pyc:
 
 clean-test:
 	rm -rf .tox/
-	rm -f .coverage
+	scripts/safe_bin.sh coverage erase
+	scripts/safe_bin.sh python -m ruff clean
 	rm -rf .cache/
 	rm -rf htmlcov/
 
+clean-venv:
+	rm -rf api_mimic_build_venv
+
 coverage:
-	coverage run --branch --source lite_boolean_formulae setup.py test
-	coverage report -m
-	coverage html
+	scripts/safe_bin.sh coverage -m pytest
+	scripts/safe_bin.sh coverage report --no-skip-covered
+	scripts/safe_bin.sh coverage html
 
 test:
-	python setup.py test --pytest-args="--cov=lite_boolean_formulae"
+	scripts/safe_bin.sh python -m pytest
 
-install: clean
-	python setup.py install
+tox:
+	scripts/safe_bin.sh python -m tox
+
+lint:
+	scripts/safe_bin.sh python -m ruff check src/
+
+lint-test:
+	scripts/safe_bin.sh python -m ruff check tests/
+
+install-dev:
+	scripts/safe_bin.sh python -m pip install .[dev]
+
+install:
+	scripts/safe_bin.sh python -m pip install .
+
+install-build:
+	scripts/safe_bin.sh python -m pip install .[build]
+
+build: install-build tox build-only
+
+build-only:
+	scripts/safe_bin.sh python -m build
+
+im:
+	scripts/safe_bin.sh ipython

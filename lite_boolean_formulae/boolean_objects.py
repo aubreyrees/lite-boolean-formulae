@@ -1,37 +1,48 @@
+"""Contains the classes used to build represent boolean formulae."""
+
+import abc
+import dataclasses
+import functools
 import itertools
 import operator
-import six
-from .utils.pp import pp_class
-from .utils.immutable_class import ImmutableClass
-from .utils.str_compat import StrCompatMixin
+from typing import Iterator, Iterable, Any, Self, TypeGuard
+from .utils import pp_class, frozenset_builder
 
 
-class CNFPublicMixin(ImmutableClass, StrCompatMixin):
-    """
-    Objects that implement this class will be exposed to and manipulated by
-    external code. This implements all the magic methods for the binary
-    logical operators (&, | and ^).
-    """
-    def _type_error(self, c, obj):
-        msg = 'Unsupported operand type(s) for {}: "{}" and "{}"'
-        raise TypeError(msg.format(c, pp_class(self), pp_class(obj)))
+def _type_error(c: str, o1: object, o2: object) -> TypeError:
+    """Build a TypeError."""
+    cls1: str = pp_class(o1)
+    cls2: str = pp_class(o2)
+    return TypeError(f'Unsupported operand type(s) for {c}: "{cls1}" and "{cls2}"')
 
-    def __and__(self, obj):
+
+class CNFPublicMixin(abc.ABC):
+    """Mixin that provides &, | and ^ implementations."""
+
+    @property
+    @abc.abstractmethod
+    def clauses(self: Self) -> frozenset["CNFClause"]:
+        """Return all clauses in this boolean formula."""
+        ...
+
+    def __and__(self: Self, obj: object) -> "bool | Self | CNFFormula | L":
+        """Calculate the conjunction of the boolean objects."""
         if obj is False:
-            return obj
+            return False
         elif obj is True:
             return self
-        elif isinstance(obj, (L, CNFFormula)):
+        elif is_boolean_formula(obj):
             return CNFFormula.build(self.clauses | obj.clauses)
         else:
-            self._type_error("&", obj)
+            raise _type_error("&", self, obj)
 
-    def __or__(self, obj):
+    def __or__(self: Self, obj: object) -> "bool | Self | CNFFormula | L":
+        """Calculate the disjunction of the boolean objects."""
         if obj is False:
             return self
         elif obj is True:
-            return obj
-        elif isinstance(obj, (L, CNFFormula)):
+            return True
+        elif is_boolean_formula(obj):
             clauses = set()
             for x, y in itertools.product(self.clauses, obj.clauses):
                 disjunction = x | y
@@ -42,9 +53,10 @@ class CNFPublicMixin(ImmutableClass, StrCompatMixin):
             else:
                 return True
         else:
-            self._type_error("|", obj)
+            raise _type_error("|", self, obj)
 
-    def __xor__(self, obj):
+    def __xor__(self: Self, obj: object) -> bool | Self:
+        """Calculate the excludsive disjunction of the boolean objects."""
         if (
             not (
                 isinstance(obj, (L, CNFFormula)) or
@@ -52,38 +64,40 @@ class CNFPublicMixin(ImmutableClass, StrCompatMixin):
                 obj is False
             )
         ):
-            self._type_error("^", obj)
+            raise _type_error( "^", self, obj)
 
         conjunction = self & obj
         disjunction = self | obj
         negated_conjunction = True if conjunction is False else ~conjunction
         return disjunction & negated_conjunction
 
-    def __rand__(self, obj):
+    def __rand__(self: Self, obj: object) -> bool | Self:
+        """Calculate the conjunction of the boolean objects."""
         return self.__and__(obj)
 
-    def __ror__(self, obj):
+    def __ror__(self: Self, obj: object) -> bool | Self:
+        """Calculate the disjunction of the boolean objects."""
         return self.__or__(obj)
 
-    def __rxor__(self, obj):
+    def __rxor__(self: Self, obj: object) -> bool | Self:
+        """Calculate the excludsive disjunction of the boolean objects."""
         return self.__xor__(obj)
 
 
+@dataclasses.dataclass(init=True,eq=True,frozen=True,slots=True)
 class CNFFormula(CNFPublicMixin):
-    """
-    Represents a Boolean formula in CNF (a conjunction of clauses).
-    """
-    def __init__(self, clauses):
-        self.clauses = clauses
-        self._frozen = True
+    """Represents a Boolean formula in CNF (a conjunction of clauses)."""
+
+    clauses: frozenset[Any]
 
     @classmethod
-    def build(cls, clauses):
+    def build(cls, clauses: Iterable["CNFClause"]) -> Self | bool | "CNFFormula" | "L":
         """
-        Builds a formula using the passed clauses. This may return False
-        if the resulting formula would be a contradiction.
+        Build a formula using the passed clauses.
+
+        This may return False if the resulting formula would be a contradiction.
         """
-        def build(singles, clauses):
+        def build(singles: set[L], clauses: set[CNFClause]) -> Iterator[CNFClause]:
             negated_singles = set(~s for s in singles)
             for c in clauses:
                 if len(c.literals) == 1 or c.literals.isdisjoint(singles):
@@ -102,55 +116,52 @@ class CNFFormula(CNFPublicMixin):
 
         return cls(frozenset(build(singles, clauses)))
 
-    def __invert__(self):
+    def __invert__(self: Self) -> Self | bool:
+        """Return the negation of the CNFFormula."""
         formulae = (~x for x in self.clauses)
-        return six.moves.reduce(operator.or_, formulae)
+        return functools.reduce(operator.or_, formulae)
 
-    def __hash__(self):
-        return hash(self.clauses)
+    def __repr__(self: Self) -> str:
+        """Return a string represenation of the CNFFormula for debugging."""
+        inner: str = ') & ('.join(repr(s) for s in self.clauses)
+        return f"({inner})"
 
-    def __eq__(self, obj):
-        return isinstance(obj, CNFFormula) and obj.clauses == self.clauses
-
-    def __repr__(self):
-        return '(' + ') & ('.join(repr(s) for s in self.clauses) + ')'
-
-    def __contains__(self, obj):
+    def __contains__(self: Self, obj: object) -> bool:
+        """Return true if any literal in the formula has label ``obj``."""
         return any(obj in s for s in self.clauses)
 
-    def __unicode__(self):
-        clauses = u') & ('.join(six.text_type(s) for s in self.clauses)
-        return u'({})'.format(clauses)
+    def __str__(self: Self) -> str:
+        """Return a string represenation of the CNFFormula."""
+        clauses = ') & ('.join(str(s) for s in self.clauses)
+        return f'({clauses})'
 
-    def substitute(self, label, formula):
-        """
-        For all this formula's clauses' literals, if a literal has label
-        ``label`` then it is substiuted for ``formula``.
-        """
+    def substitute(
+        self: Self,
+        label: object,
+        formula: Self | bool
+    ) -> Self | bool:
+        """Subsitute literals with label ``label`` with the formula ``formula``."""
         bits = (c.substitute(label, formula) for c in self.clauses)
-        return six.moves.reduce(operator.and_, bits)
+        return functools.reduce(operator.and_, bits)
 
-    def get_literals(self):
-        """
-        Returns the labels of all the literals in this formula
-        """
+    def get_literals(self: Self) -> frozenset[object]:
+        """Return the labels of all the literals in this formula."""
         bits = (s.get_literals() for s in self.clauses)
-        return six.moves.reduce(operator.or_, bits)
+        return functools.reduce(operator.or_, bits)
 
 
-class CNFClause(ImmutableClass, StrCompatMixin):
-    """
-    Represents a logical clause (a disjunction of literals).
-    """
-    def __init__(self, literals):
-        self.literals = literals
-        self._frozen = True
+@dataclasses.dataclass(init=True,eq=True,frozen=True,slots=True)
+class CNFClause:
+    """Represents a logical clause (a disjunction of literals)."""
+
+    literals: frozenset[Any]
 
     @classmethod
-    def build(cls, literals):
+    def build(cls, literals: Iterable["L"]) -> Self:
         """
-        Builds a clause from the passed literals. This may return True if the
-        combined clauses form a tautology
+        Build a clause from the passed literals.
+
+        This may return True if the combined clauses form a tautology.
         """
         for literal in literals:
             if ~literal in literals:
@@ -158,108 +169,99 @@ class CNFClause(ImmutableClass, StrCompatMixin):
 
         return cls(frozenset(literals))
 
-    def __or__(self, obj):
-        return CNFClause.build(self.literals | obj.literals)
+    def __or__(self: Self, obj: object) -> "CNFClause":
+        """Calculate the disjunction of the boolean objects."""
+        if (
+            isinstance(obj, CNFFormula)
+            or isinstance(obj, CNFClause)
+            or isinstance(obj, L)
+        ):
+            return CNFClause.build(self.literals | obj.literals)
+        else:
+            raise _type_error("|", self, obj)
 
-    def __invert__(self):
-        def build():
+    def __invert__(self: Self) -> CNFFormula:
+        """Return the negation of the literal."""
+        def build() -> Iterable[CNFClause]:
             for x in self.literals:
                 yield CNFClause.build(set((~x,)))
         return CNFFormula.build(build())
 
-    def __hash__(self):
-        return hash(self.literals)
-
-    def __eq__(self, obj):
-        return (
-            isinstance(obj, CNFClause) and
-            obj.literals == self.literals
-        )
-
-    def __repr__(self):
+    def __repr__(self: Self) -> str:
+        """Return a string represenation of the CNFClause for debugging."""
         return ' | '.join(repr(s) for s in self.literals)
 
-    def __contains__(self, obj):
+    def __contains__(self: Self, obj: object) -> bool:
+        """Return true if boolean formula has a literal with label ``obj``."""
         return any(obj in s for s in self.literals)
 
-    def __unicode__(self):
-        literals = u' | '.join(six.text_type(l) for l in self.literals)
-        return u'{}'.format(literals)
+    def __str__(self: Self) -> str:
+        """Return a string represenation of hte CNFClause."""
+        literals = ' | '.join(str(x) for x in self.literals)
+        return f'{literals}'
 
-    def substitute(self, label, formula):
-        """
-        For all this clause's literals, if a literal has label ``label`` then
-        it is substiuted for ``formula``.
-        """
-        bits = (l.substitute(label, formula) for l in self.literals)
-        return six.moves.reduce(operator.or_, bits)
+    def substitute(
+        self: Self,
+        label: object,
+        formula: CNFFormula | bool
+    ) -> CNFFormula | bool:
+        """Subsitute literals with label ``label`` with the formula ``formula``."""
+        bits = (x.substitute(label, formula) for x in self.literals)
+        return functools.reduce(operator.or_, bits)
 
-    def get_literals(self):
-        """
-        Returns the labels of all the literals in this clause
-        """
+    def get_literals(self: Self) -> frozenset[object]:
+        """Return the labels of all the literals in this clause."""
         bits = (v.get_literals() for v in self.literals)
-        return six.moves.reduce(operator.or_, bits)
+        return functools.reduce(operator.or_, bits)
 
 
+@dataclasses.dataclass(init=True,eq=True,frozen=True,slots=True)
 class L(CNFPublicMixin):
-    """
-    Represents a literal
-    """
-    def __init__(self, label, negated=False):
-        self.label = label
-        self.negated = negated
-        self._frozen = True
+    """Represents a literal."""
 
-    def __invert__(self):
+    label: object
+    negated: bool = False
+
+    def __invert__(self: Self) -> Self:
+        """Return the negation of the literal."""
         return L(self.label, negated=(not self.negated))
 
-    def __hash__(self):
-        return hash(self.label) * 10 + (1 if self.negated else 0)
+#    def __repr__(self: Self) -> str:
+#        """Return a string represenation of the literal for debugging."""
+#        rlabel: str = repr(self.label)
+#        if self.negated:
+#            return f"~L({rlabel})"
+#        else:
+#            return f"L({rlabel})"
 
-    def __eq__(self, obj):
-        return (
-            isinstance(obj, L) and
-            self.label == obj.label and
-            self.negated == obj.negated
-        )
-
-    def __repr__(self):
-        if self.negated:
-            return "~ L({})".format(repr(self.label))
-        else:
-            return "L({})".format(repr(self.label))
-
-    def __contains__(self, obj):
+    def __contains__(self: Self, obj: object) -> bool:
+        """Return true if boolean formula has a literal with label ``obj``."""
         return obj == self.label
 
-    def __unicode__(self):
-        out = None
+    def __str__(self: Self) -> str:
+        """Return a string represenation of the literal."""
+        out: str
 
-        text_label = six.text_type(self.label)
-        if isinstance(self.label, six.string_types):
-            out = u'L("{}")'.format(text_label.replace('"', '\\"'))
+        if isinstance(self.label, str):
+            t = self.label.replace('"', '\\"')
+            out = f'L("{t}")'
         else:
-            out = u'L({})'.format(text_label)
+            t = str(self.label)
+            out = f'L({t})'
 
-        if self.negated:
-            out = u"~" + out
-
-        return out
+        return f"~{out}" if self.negated else out
 
     @property
-    def clauses(self):
-        """
-        Returns a CNFClause with this literal as the clause's sole literal.
-        """
-        return frozenset((CNFClause(frozenset((self,))),))
+    def clauses(self: Self) -> frozenset[CNFClause]:
+        """Return a CNFClause with this literal as the clause's sole literal."""
+        return frozenset_builder(CNFClause(frozenset_builder(self)))
 
-    def substitute(self, label, formula):
-        """
-        If label is this literal's label returns formula (or the negation of
-        the formula if this literal is negated), otherwise returns a new
-        literal that is identical to this literal.
-        """
+    def substitute(
+        self: Self,
+        label: object,
+        formula: Self | CNFFormula | bool
+    ) -> "L | bool | CNFFormula |  Self":
+        """Subsitute literals with label ``label`` with the formula ``formula``."""
         if self.label == label:
             if self.negated:
                 return ~formula
@@ -268,8 +270,11 @@ class L(CNFPublicMixin):
         else:
             return L(self.label, self.negated)
 
-    def get_literals(self):
-        """
-        Returns a frozenset with this literal's label as the sets sole member
-        """
-        return frozenset((self.label,))
+    def get_literals(self: Self) -> frozenset[object]:
+        """Return a frozenset containing only this literal's label."""
+        return frozenset_builder(self.label)
+
+
+def is_boolean_formula(obj: object) -> TypeGuard[CNFFormula | L]:
+    """Return true if obj is a boolean_formula object."""
+    return isinstance(obj, (CNFFormula, L))

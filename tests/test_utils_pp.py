@@ -1,4 +1,4 @@
-from lite_boolean_formulae.utils.pp import pp_class
+from lite_boolean_formulae.utils import pp_class
 
 
 class Klass(object):
