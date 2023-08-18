@@ -1,8 +1,8 @@
 # Lite Boolean Formulae
 
-This module helps with the building of small to medium Boolean formulae. This
-module expresses Boolean formulae in CNF internally and does not preserve the
-original form of the formula.
+This module provides ulities to build small Boolean formulae. This
+module uses CNF internally and does not preserve the
+formula.
 
 ## Installation
 
@@ -22,13 +22,11 @@ https://github.com/aubreystarktoller/lite-boolean-formulae
 
 ## Boolean formula Objects
    
-A boolean formula object represents a boolean formula. The precise
-implemention of a boolean formula object is not defined and is considered an
-implementation detail but they do consist of literals which are referenced
-using labels, where a label is any hashable Python object. It is assumed that
-if two literals are equal if there labels are equale.
+This module implements objects that represent boolean formulae and these are built
+up using literals. Literals are referenced using labels, where a label is any hashable
+Python object. Two literals are equal if and only if there labels are equal.
 
-Boolean formula objects are immutable.
+Boolean formulae are immutable.
 
 
 ### Constructors
@@ -119,7 +117,22 @@ Out[15]: True
 ```
 
 ## Testing
-Tests use tox and pytest. Useful make targets provided for convience.
+Tests use tox and pytest. Make targets and build script provided for convience.
+
+### Scripts
+
+**scripts/make_venv**
+
+Build a dev virtual enviroment (using the `venv` module) in the git repo root. This 
+virtual enviroment will be used by make targets for packages.
+
+### Makefile
+
+Run `make help` to see targets.
+
+### Testing with tox
+
+Run `make tox` to install and run tox once the dev virtual enviroment is setup.
 
 ## Contributing
 Contributions are welcome. Please ensure that any submitted code is well
