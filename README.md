@@ -11,13 +11,13 @@ Suppored Python versions are: 3.11
 To install using pip:
 
 ```
-pip install git+https://github.com/aubreystarktoller/lite-booltean-formulae.git
+pip install git+https://github.com/aubreyrees/lite-booltean-formulae.git
 ```
 
 You can obtain the source  from:
 
 ```
-https://github.com/aubreystarktoller/lite-boolean-formulae
+https://github.com/aubreyrees/lite-boolean-formulae
 ```
 
 ## Boolean formula Objects
