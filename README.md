@@ -54,7 +54,7 @@ Calculate the exclusive disjunction of the formulae `A` and `B`.
 **Note:** `&`, `|`, `^` are, as expected, associative
 operations. A bool value be used as the left or right had value.
 
-**~ A**
+**\~A**
 
 Returns the negation of the boolean formula `A`.
 
