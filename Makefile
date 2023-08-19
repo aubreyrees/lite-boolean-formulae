@@ -15,6 +15,7 @@ help:
 	@echo "build-only     build the package"
 	@echo "build          run \`install-build\`, \`tox\` & \`build-only\` targets"
 	@echo "im             starts Python in interactive mode; uses \`ipython\`"
+	@echo "sa             static analysis - run \`mypy`\ on the project"
 	@echo "help           print this messsage"
 
 clean: clean-test clean-build clean-pyc
@@ -49,9 +50,6 @@ coverage:
 test:
 	scripts/safe_bin.sh python -m pytest
 
-tox:
-	scripts/safe_bin.sh python -m tox
-
 lint:
 	scripts/safe_bin.sh python -m ruff check src/
 
@@ -74,3 +72,10 @@ build-only:
 
 im:
 	scripts/safe_bin.sh ipython
+
+sa:
+	scripts/safe_bin.sh python -m mypy src/
+
+tox:
+	scripts/safe_bin.sh python -m pip install tox
+	scripts/safe_bin.sh python -m tox
