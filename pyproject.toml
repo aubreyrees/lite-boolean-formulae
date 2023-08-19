@@ -13,14 +13,14 @@ classifiers = [
     "Operating System :: OS Independent",
     "Development Status :: 5 - Production/Stable"
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 
 [project.urls]
 "Homepage" = "https://github.com/aubreyrees/lite-boolean-formulae"
 "Bug Tracker" = "https://github.com/aubreyrees/lite-boolean-formulae/issues"
 
 [project.optional-dependencies]
-dev = ["tox","pytest","coverage","ruff","build","ipython"]
+dev = ["tox","pytest","coverage","ruff","build","ipython","mypy"]
 build = ["tox","build"]
 
 [build-system]
