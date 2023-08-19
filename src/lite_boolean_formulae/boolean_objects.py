@@ -27,6 +27,7 @@ class CNFPublicMixin(abc.ABC):
 
     @abc.abstractmethod
     def __invert__(self: Self)  -> "bool | Self | CNFFormula | L":
+        """Return the formula's negation."""
         ...
 
     def __and__(self: Self, obj: object) -> "bool | Self | CNFFormula | L":
@@ -64,7 +65,7 @@ class CNFPublicMixin(abc.ABC):
         if obj is True:
             return ~self
         elif obj is False:
-            return obj
+            return self
         elif isinstance(obj, (L, CNFFormula)):
             conjunction = self & obj
             disjunction = self | obj
@@ -98,13 +99,17 @@ class CNFFormula(CNFPublicMixin):
     clauses: frozenset[Any]
 
     @classmethod
-    def build(cls, clauses: Iterable["CNFClause | bool"]) -> "Self | bool | CNFFormula | L":
+    def build(
+        cls, clauses: Iterable["CNFClause | bool"]
+    ) -> "Self | bool | CNFFormula | L":
         """
         Build a formula using the passed clauses.
 
         This may return False if the resulting formula would be a contradiction.
         """
-        def build(singles: set[L], clauses: set[CNFClause]) -> Iterator[CNFClause | bool]:
+        def build(
+            singles: set[L], clauses: set[CNFClause]
+        ) -> Iterator[CNFClause | bool]:
             negated_singles = set(~s for s in singles)
             for c in clauses:
                 if len(c.literals) == 1 or c.literals.isdisjoint(singles):
