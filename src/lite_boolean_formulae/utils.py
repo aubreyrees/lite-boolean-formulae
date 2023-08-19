@@ -2,10 +2,10 @@
 
 
 import inspect
-from typing import TypeVar
+from typing import TypeVar, Hashable
 
 
-T = TypeVar("T")
+T = TypeVar("T", bound=Hashable)
 
 
 def frozenset_builder(*args: T) -> frozenset[T]:
